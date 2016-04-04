@@ -1,0 +1,24 @@
+{
+  "name" : "dslink-dart-solaredge",
+  "version" : "1.0.0",
+  "description" : "Solar Edge DSLink",
+  "main" : "bin/run.dart",
+  "engines" : {
+    "dart" : ">1.13.0"
+  },
+  "getDependencies" : [
+    "pub get"
+  ],
+  "configs" : {
+    "broker" : {
+      "type" : "url"
+    },
+    "name" : {
+      "type" : "string",
+      "default" : "Solar Edge"
+    },
+    "token" : {
+      "type" : "string"
+    }
+  }
+}
