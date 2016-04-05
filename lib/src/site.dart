@@ -27,7 +27,7 @@ class Site {
   String currency;
   String notes;
   String type;
-  DateTime installationDate;
+  DateTime installDate;
   Location location;
   int numAlerts;
   String alertSeverity;
@@ -45,7 +45,7 @@ class Site {
     status = map[_status];
     peakPower = map[_peakPower];
     currency = map[_currency];
-    installationDate = DateTime.parse(map[_installDate]);
+    installDate = DateTime.parse(map[_installDate]);
     notes = map[_notes];
     type = map[_type];
     location = new Location.fromJson(map[_location]);
