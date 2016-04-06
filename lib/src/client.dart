@@ -64,7 +64,7 @@ class SeClient {
     if (resp != null) {
       site.addCall();
       list = new List<Equipment>();
-      for (var equip in resp['list']) {
+      for (var equip in resp['reporters']['list']) {
         list.add(new Equipment.fromJson(equip));
       }
       site.equipment = list;
@@ -84,7 +84,7 @@ class SeClient {
       qParams.addAll(params);
     }
 
-    var uri = rootHost.replace(path: path, queryParameters: params);
+    var uri = rootHost.replace(path: path, queryParameters: qParams);
 
     Map map;
     try {
