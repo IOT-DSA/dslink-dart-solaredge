@@ -1,3 +1,5 @@
+import 'equipment.dart';
+
 class Site {
   static const _id = 'id';
   static const _name = 'name';
@@ -34,6 +36,7 @@ class Site {
   Map<String, String> uris;
   bool isPublic;
   String publicName;
+  List<Equipment> equipment;
 
   final String api;
   final int id;
