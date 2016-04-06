@@ -9,6 +9,7 @@ main(List<String> args) async {
 
   link = new LinkProvider(args, 'SolarEdge-', autoInitialize: false, profiles: {
       AddSiteNode.isType: (String path) => new AddSiteNode(path, client, link),
+      SiteNode.isType: (String path) => new SiteNode(path, client),
       },
       defaultNodes: {
         'Sites' : { AddSiteNode.pathName: AddSiteNode.definition() }

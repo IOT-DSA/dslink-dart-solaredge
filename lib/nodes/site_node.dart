@@ -8,8 +8,10 @@ import '../models.dart';
 
 class SiteNode extends SimpleNode {
   static const String isType = 'siteNode';
-  static Map<String, dynamic> definition(Site site) => {
+  static Map<String, dynamic> definition(Site site, String apiKey) => {
     r'$is': isType,
+    r'$$se_id': site.id,
+    r'$$se_api': apiKey,
     'siteName': {
       r'$name': 'Site Name',
       r'$type': 'string',
@@ -123,10 +125,26 @@ class SiteNode extends SimpleNode {
         r'$type' : 'bool',
         r'?value' : site.isPublic,
       },
+    },
+    'equipment': {
+      r'$name': 'Equipment'
+      // GetEquipment.pathName : GetEquipment.definition()
     }
   };
 
-  SiteNode(String path) : super(path);
+  Site site;
+  SeClient client;
+
+  SiteNode(String path, this.client) : super(path);
+
+  @override
+  void onCreated() {
+    var api = getConfig(r'$$se_api');
+    var id = getConfig(r'$$se_id');
+    client.addSite(id, api).then((Site site) {
+      this.site = site;
+    });
+  }
 }
 
 
@@ -146,8 +164,8 @@ class AddSiteNode extends SimpleNode {
     r'$name' : 'Add Site',
     r'$invokable' : 'write',
     r'$params' : [
-      { 'name' : _siteName, 'type': 'string' },
-      { 'name' : _siteId, 'type' : 'number', 'placeholder': '000000' },
+      { 'name' : _siteName, 'type': 'string', 'placeholder': 'Site Name' },
+      { 'name' : _siteId, 'type' : 'number', 'min': '0' },
       { 'name' : _siteApi, 'type': 'string' },
     ],
     r'$columns' : [
@@ -190,7 +208,8 @@ class AddSiteNode extends SimpleNode {
 
       var pPath = parent.path;
       var nName = NodeNamer.createName(name);
-      provider.addNode('$pPath/$name', SiteNode.definition(site));
+      provider.addNode('$pPath/$nName', SiteNode.definition(site, api));
+      link.save();
     } else {
       ret[_message] = 'Unable to query site details';
     }
