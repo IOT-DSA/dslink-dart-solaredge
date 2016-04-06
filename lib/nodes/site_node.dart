@@ -5,6 +5,7 @@ import 'package:dslink/nodes.dart' show NodeNamer;
 
 import '../src/client.dart';
 import '../models.dart';
+import 'equipment_node.dart';
 
 class SiteNode extends SimpleNode {
   static const String isType = 'siteNode';
@@ -127,8 +128,13 @@ class SiteNode extends SimpleNode {
       },
     },
     'equipment': {
-      r'$name': 'Equipment'
-      // GetEquipment.pathName : GetEquipment.definition()
+      r'$name': 'Equipment',
+       LoadEquipment.pathName : LoadEquipment.definition(),
+      'count' : {
+        r'$name' : 'Count',
+        r'$type' : 'number',
+        r'?value' : null,
+      },
     }
   };
 
