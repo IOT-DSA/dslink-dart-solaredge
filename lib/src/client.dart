@@ -88,6 +88,29 @@ class SeClient {
     return site;
   }
 
+  /// Retrieves the specified [Site] Energy Measurements from the server for
+  /// the `startDate` and `endDate` specified in `params`. `timeUnit` of params
+  /// must be one of: QUARTER_OF_AN_HOUR, HOUR, DAY, WEEK, MONTH, YEAR.
+  ///
+  /// Time period must be 1 month or less for QUARTER_OF_AN_HOUR, and HOUR.
+  /// Time period must be 1 year if using `timeUnit` of DAY.
+  ///
+  /// Returns an [EnergyMeasurements] object with energy units and list of
+  /// Energy dates, values and units.
+  Future<EnergyMeasurements> getSiteEnergy(Site site, Map params) async {
+    if (site == null || params == null) return null;
+
+    EnergyMeasurements em;
+    var resp = await _getRequest(PathHelper.getEnergy(site), site.api,
+        params: params);
+    if (resp != null) {
+      site.addCall();
+      em = new EnergyMeasurements.fromJson(resp['energy']);
+    }
+
+    return em;
+  }
+
   /// Helper to simplify GET requests. Required a [String] path which should
   /// be the path part of the URL. The string API Key, and optionally any
   /// additional parameters to pass. Returns a Map result as decoded from JSON
@@ -125,4 +148,6 @@ abstract class PathHelper {
       'equipment/${site.id}/list.json';
   static String productionDates(Site site) =>
       'site/${site.id}/dataPeriod.json';
+  static String getEnergy(Site site) =>
+      'site/${site.id}/energy.json';
 }
