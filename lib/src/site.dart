@@ -14,7 +14,7 @@ class Site {
   static const _alertQuant = 'alertQuantity';
   static const _alertSev = 'alertSeverity';
   static const _uris = 'uris';
-  static const _imgUri = 'IMAGE_URI';
+  //static const _imgUri = 'IMAGE_URI';
   static const _pubSettings = 'publicSettings';
   static const _pubName = 'name';
   static const _pubVis = 'isPublic';

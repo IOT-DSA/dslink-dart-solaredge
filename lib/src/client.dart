@@ -88,7 +88,7 @@ class SeClient {
     return site;
   }
 
-  /// Retrieves the specified [Site] Energy Measurements from the server for
+  /// Retrieves Energy Measurements for the specified [Site] from the server for
   /// the `startDate` and `endDate` specified in `params`. `timeUnit` of params
   /// must be one of: QUARTER_OF_AN_HOUR, HOUR, DAY, WEEK, MONTH, YEAR.
   ///
@@ -106,6 +106,25 @@ class SeClient {
     if (resp != null) {
       site.addCall();
       em = new EnergyMeasurements.fromJson(resp['energy']);
+    }
+
+    return em;
+  }
+
+  /// Retrieves the Total energy produced for the specified [Site] in the time
+  /// period from `startDate` to `endDate` of [params].
+  ///
+  /// Returns a [EnergyMeasurement] object with total energy and the energy
+  /// units.
+  Future<EnergyMeasurement> getTotalEnergy(Site site, Map params) async {
+    if (site == null || params == null) return null;
+
+    EnergyMeasurement em;
+    var resp = await _getRequest(PathHelper.getTimeFrameEnergy(site), site.api,
+        params: params);
+    if (resp != null) {
+      site.addCall();
+      em = new EnergyMeasurement.fromJson(resp['timeFrameEnergy']);
     }
 
     return em;
@@ -150,4 +169,6 @@ abstract class PathHelper {
       'site/${site.id}/dataPeriod.json';
   static String getEnergy(Site site) =>
       'site/${site.id}/energy.json';
+  static String getTimeFrameEnergy(Site site) =>
+      'site/${site.id}/timeFrameEnergy.json';
 }
