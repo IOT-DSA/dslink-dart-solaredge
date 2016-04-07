@@ -61,6 +61,7 @@ class LoadEquipment extends SeCommand {
     var site = getSite();
 
     var list = await client.loadEquipment(site);
+    updateCalls();
     if (list == null) {
       ret[_message] = 'Unable to load equipment.';
       return ret;

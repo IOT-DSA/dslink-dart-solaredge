@@ -8,14 +8,18 @@ abstract class SeBase extends SimpleNode {
     serializable = false;
   }
 
-  Site getSite() {
+  SiteNode getSiteNode() {
     var p = parent;
     while (p is! SiteNode && p != null) {
       p = p.parent;
     }
 
-    return (p as SiteNode).site;
+    return p;
   }
+
+  Site getSite() => getSiteNode()?.site;
+
+  void updateCalls() => getSiteNode()?.updateCalls();
 }
 
 abstract class SeCommand extends SeBase {
