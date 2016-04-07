@@ -156,7 +156,8 @@ class SiteNode extends SimpleNode {
         r'?value' : site.dataEnd,
       },
       LoadProductionDates.pathName: LoadProductionDates.definition(),
-      GetEnergyMeasurements.pathName: GetEnergyMeasurements.definition()
+      GetEnergyMeasurements.pathName: GetEnergyMeasurements.definition(),
+      GetTotalEnergy.pathName: GetTotalEnergy.definition()
     },
   };
 
@@ -177,6 +178,12 @@ class SiteNode extends SimpleNode {
     if (nd == null) {
       provider.addNode('$path/${GetEnergyMeasurements.pathName}',
           GetEnergyMeasurements.definition());
+    }
+
+    nd = provider.getNode('$path/${GetTotalEnergy.pathName}');
+    if (nd == null) {
+      provider.addNode('$path/${GetTotalEnergy.pathName}',
+          GetTotalEnergy.definition());
     }
   }
 

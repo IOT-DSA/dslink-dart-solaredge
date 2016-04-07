@@ -14,7 +14,8 @@ main(List<String> args) async {
       LoadProductionDates.isType: (String path) =>
           new LoadProductionDates(path, client),
       GetEnergyMeasurements.isType: (String path) =>
-          new GetEnergyMeasurements(path, client)
+          new GetEnergyMeasurements(path, client),
+      GetTotalEnergy.isType: (String path) => new GetTotalEnergy(path, client)
     },
     defaultNodes: {
       'Sites' : { AddSiteNode.pathName: AddSiteNode.definition() }
