@@ -11,10 +11,12 @@ main(List<String> args) async {
       AddSiteNode.isType: (String path) => new AddSiteNode(path, client, link),
       SiteNode.isType: (String path) => new SiteNode(path, client),
       LoadEquipment.isType: (String path) => new LoadEquipment(path, client),
-      },
-      defaultNodes: {
-        'Sites' : { AddSiteNode.pathName: AddSiteNode.definition() }
-      });
+      LoadProductionDates.isType: (String path) =>
+          new LoadProductionDates(path, client),
+    },
+    defaultNodes: {
+      'Sites' : { AddSiteNode.pathName: AddSiteNode.definition() }
+  });
 
   link.init();
   await link.connect();

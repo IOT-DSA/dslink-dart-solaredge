@@ -37,6 +37,8 @@ class Site {
   bool isPublic;
   String publicName;
   List<Equipment> equipment;
+  String dataStart;
+  String dataEnd;
 
   final String api;
   final int id;

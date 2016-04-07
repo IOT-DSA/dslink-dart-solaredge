@@ -6,6 +6,7 @@ import 'package:dslink/nodes.dart' show NodeNamer;
 import '../src/client.dart';
 import '../models.dart';
 import 'equipment_node.dart';
+import 'se_base.dart';
 
 class SiteNode extends SimpleNode {
   static const String isType = 'siteNode';
@@ -135,7 +136,26 @@ class SiteNode extends SimpleNode {
         r'$type' : 'number',
         r'?value' : null,
       },
-    }
+    },
+    'apiCalls' : {
+      r'$name' : 'API Calls',
+      r'$type' : 'number',
+      r'?value' : site.calls,
+    },
+    'energyProductionDates': {
+      r'$name': 'Energy Production Dates',
+      'productionStart' : {
+        r'$name' : 'Start',
+        r'$type' : 'string',
+        r'?value' : site.dataStart,
+      },
+      'productionEnd' : {
+        r'$name' : 'End',
+        r'$type' : 'string',
+        r'?value' : site.dataEnd,
+      },
+      LoadProductionDates.pathName: LoadProductionDates.definition()
+    },
   };
 
   Site site;
@@ -150,6 +170,10 @@ class SiteNode extends SimpleNode {
     client.addSite(id, api).then((Site site) {
       this.site = site;
     });
+  }
+
+  void updateCalls() {
+    provider.updateValue('$path/apiCalls', site.calls);
   }
 }
 
@@ -219,6 +243,49 @@ class AddSiteNode extends SimpleNode {
     } else {
       ret[_message] = 'Unable to query site details';
     }
+    return ret;
+  }
+}
+
+class LoadProductionDates extends SeCommand {
+  static const String isType = 'loadProductionDates';
+  static const String pathName = 'Load_Production_Dates';
+
+  static const String _success = 'success';
+  static const String _message = 'message';
+
+  static Map<String, dynamic> definition() => {
+    r'$is' : isType,
+    r'$name' : 'Load Production Dates',
+    r'$invokable' : 'write',
+    r'$params' : [],
+    r'$columns' : [
+      { 'name' : _success, 'type' : 'bool', 'default' : false },
+      { 'name' : _message, 'type' : 'string', 'default': '' }
+    ]
+  };
+
+  final SeClient client;
+
+  LoadProductionDates(String path, this.client) : super(path);
+
+  @override
+  Future<Map<String, dynamic>> onInvoke(Map<String, dynamic> params) async {
+    var ret = { _success: false, _message : '' };
+
+    var site = getSite();
+    var result = await client.loadProductionDates(site);
+    updateCalls();
+    if (result != null) {
+      var pPath = parent.path;
+      provider.updateValue('$pPath/productionStart', site.dataStart);
+      provider.updateValue('$pPath/productionEnd', site.dataEnd);
+      ret[_success] = true;
+      ret[_message] = 'Success!';
+    } else {
+      ret[_message] = 'Unable to load energy production dates';
+    }
+
     return ret;
   }
 }
