@@ -158,3 +158,80 @@ class GetTotalEnergy extends SeCommand {
     return ret;
   }
 }
+
+class GetSitePower extends SeCommand {
+  static const String isType = 'getSitePower';
+  static const String pathName = 'Get_Power_Measurements';
+
+  static const String _dateRange = 'dateRange';
+  static const String _date = 'date';
+  static const String _value = 'value';
+  static const String _energyUnit = 'energyUnit';
+
+  static const Duration _monthPeriod = const Duration(days: 31);
+
+  static Map<String, dynamic> definition() => {
+    r'$is' : isType,
+    r'$name' : 'Get Power Measurements',
+    r'$invokable' : 'write',
+    r'$params' : [
+      { 'name': _dateRange, 'type': 'string', 'editor': 'daterange'},
+    ],
+    r'$result': 'table',
+    r'$columns' : [
+      { 'name' : _date, 'type' : 'bool', 'default' : false},
+      { 'name' : _value, 'type' : 'number', 'default': 0},
+      { 'name' : _energyUnit, 'type': 'string', 'default': ''}
+    ]
+  };
+
+  final SeClient client;
+
+  GetSitePower(String path, this.client) : super(path);
+
+  @override
+  Future<List<Map>> onInvoke(Map<String, String> params) async {
+    var ret = new List<Map>();
+
+    var dates = params[_dateRange]?.split('/');
+    if (dates == null || dates.length != 2) return ret;
+
+    DateTime startDate;
+    DateTime endDate;
+    try {
+      startDate = DateTime.parse(dates[0]);
+      endDate = DateTime.parse(dates[1]);
+    } on FormatException {
+      return ret;
+    }
+
+    // Start date should be before End Date
+    if (startDate.compareTo(endDate) >= 0) {
+      return ret;
+    }
+
+    // No more than a month period.
+    var diff = endDate.difference(startDate);
+    if (diff.compareTo(_monthPeriod) > 0) return ret;
+
+    var qParams = {};
+    var startStr = startDate.toString();
+    var endStr = endDate.toString();
+    qParams['startTime'] = startStr.substring(0, startStr.length - 4);
+    qParams['endTime'] = endStr.substring(0, endStr.length - 4);
+    var site = getSite();
+    var result = await client.getSitePower(site, qParams);
+    updateCalls();
+    if (result == null) return ret;
+
+    for (var em in result.measurements) {
+      var mp = {};
+      mp[_date] = em.date;
+      mp[_value] = em.value;
+      mp[_energyUnit] = em.energyUnit;
+      ret.add(mp);
+    }
+
+    return ret;
+  }
+}

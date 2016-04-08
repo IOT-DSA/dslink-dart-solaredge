@@ -157,7 +157,8 @@ class SiteNode extends SimpleNode {
       },
       LoadProductionDates.pathName: LoadProductionDates.definition(),
       GetEnergyMeasurements.pathName: GetEnergyMeasurements.definition(),
-      GetTotalEnergy.pathName: GetTotalEnergy.definition()
+      GetTotalEnergy.pathName: GetTotalEnergy.definition(),
+      GetSitePower.pathName: GetSitePower.definition()
     },
   };
 
@@ -174,17 +175,16 @@ class SiteNode extends SimpleNode {
       this.site = site;
     });
 
-    var nd = provider.getNode('$path/${GetEnergyMeasurements.pathName}');
-    if (nd == null) {
-      provider.addNode('$path/${GetEnergyMeasurements.pathName}',
-          GetEnergyMeasurements.definition());
+    /// TODO: Remove these when done testing.
+    void addMissing(String npath, Map definition) {
+      var nd = provider.getNode('$path/$npath');
+      if (nd == null) {
+        provider.addNode('$path/$npath', definition);
+      }
     }
-
-    nd = provider.getNode('$path/${GetTotalEnergy.pathName}');
-    if (nd == null) {
-      provider.addNode('$path/${GetTotalEnergy.pathName}',
-          GetTotalEnergy.definition());
-    }
+    addMissing(GetEnergyMeasurements.pathName, GetEnergyMeasurements.definition());
+    addMissing(GetTotalEnergy.pathName, GetTotalEnergy.definition());
+    addMissing(GetSitePower.pathName, GetSitePower.definition());
   }
 
   void updateCalls() {
