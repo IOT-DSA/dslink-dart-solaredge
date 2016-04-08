@@ -5,6 +5,7 @@ import 'package:dslink/nodes.dart' show NodeNamer;
 
 import '../src/client.dart';
 import '../models.dart';
+import 'overview_node.dart';
 import 'equipment_node.dart';
 import 'get_energy.dart';
 import 'se_base.dart';
@@ -155,6 +156,7 @@ class SiteNode extends SimpleNode {
         r'$type' : 'string',
         r'?value' : site.dataEnd,
       },
+      OverviewNode.pathName: OverviewNode.definition(),
       LoadProductionDates.pathName: LoadProductionDates.definition(),
       GetEnergyMeasurements.pathName: GetEnergyMeasurements.definition(),
       GetTotalEnergy.pathName: GetTotalEnergy.definition(),
@@ -185,10 +187,13 @@ class SiteNode extends SimpleNode {
     addMissing(GetEnergyMeasurements.pathName, GetEnergyMeasurements.definition());
     addMissing(GetTotalEnergy.pathName, GetTotalEnergy.definition());
     addMissing(GetSitePower.pathName, GetSitePower.definition());
+    addMissing(OverviewNode.pathName, OverviewNode.definition());
   }
 
   void updateCalls() {
-    provider.updateValue('$path/apiCalls', site.calls);
+    if (site != null) {
+      provider.updateValue('$path/apiCalls', site.calls);
+    }
   }
 }
 
