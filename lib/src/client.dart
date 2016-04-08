@@ -144,6 +144,20 @@ class SeClient {
     return em;
   }
 
+  /// Retrieve [Overview] for the specified [Site]
+  Future<Overview> getOverview(Site site) async {
+    if (site == null) return null;
+
+    Overview ov;
+    var resp = await _getRequest(PathHelper.overview(site), site.api);
+    if (resp != null) {
+      site.addCall();
+      ov = new Overview.fromJson(resp['overview']);
+    }
+
+    return ov;
+  }
+
   /// Helper to simplify GET requests. Required a [String] path which should
   /// be the path part of the URL. The string API Key, and optionally any
   /// additional parameters to pass. Returns a Map result as decoded from JSON
@@ -187,4 +201,6 @@ abstract class PathHelper {
       'site/${site.id}/power.json';
   static String getTimeFrameEnergy(Site site) =>
       'site/${site.id}/timeFrameEnergy.json';
+  static String overview(Site site) =>
+      'site/${site.id}/overview';
 }
