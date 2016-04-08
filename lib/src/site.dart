@@ -1,3 +1,5 @@
+import 'dart:async' show Timer;
+
 import 'equipment.dart';
 
 class Site {
@@ -43,6 +45,8 @@ class Site {
   final String api;
   final int id;
 
+  Timer _timer;
+
   Site(this.id, this.api);
   Site.fromJson(Map<String, dynamic> map, this.api) : id = map[_id] {
     accountId = map[_accountId];
@@ -61,7 +65,11 @@ class Site {
     isPublic = map[_pubSettings][_pubVis];
   }
 
-  void addCall() { _numCalls++; }
+  void addCall() {
+    _timer ??= new Timer.periodic(new Duration(hours: 24),
+        (t) { _numCalls = 0;});
+    _numCalls++;
+  }
 }
 
 class Location {
