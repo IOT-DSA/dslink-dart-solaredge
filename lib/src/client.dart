@@ -111,6 +111,20 @@ class SeClient {
     return em;
   }
 
+  Future<EnergyMeasurements> getSitePower(Site site, Map params) async {
+    if (site == null || params == null) return null;
+
+    EnergyMeasurements em;
+    var resp = await _getRequest(PathHelper.getPower(site), site.api,
+        params: params);
+    if (resp != null) {
+      site.addCall();
+      em = new EnergyMeasurements.fromJson(resp['power']);
+    }
+
+    return em;
+  }
+
   /// Retrieves the Total energy produced for the specified [Site] in the time
   /// period from `startDate` to `endDate` of [params].
   ///
@@ -169,6 +183,8 @@ abstract class PathHelper {
       'site/${site.id}/dataPeriod.json';
   static String getEnergy(Site site) =>
       'site/${site.id}/energy.json';
+  static String getPower(Site site) =>
+      'site/${site.id}/power.json';
   static String getTimeFrameEnergy(Site site) =>
       'site/${site.id}/timeFrameEnergy.json';
 }
