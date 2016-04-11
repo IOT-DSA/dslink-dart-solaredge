@@ -69,3 +69,58 @@ class DetailedMeasurements {
     measurements.sort((a, b) => a.date.compareTo(b.date));
   }
 }
+
+class FlowItem extends EnergyMeasurement {
+  String status;
+
+  FlowItem(this.status, num value, String unit) : super(value, unit);
+}
+
+class FlowStorage {
+  String energyUnit;
+  String status;
+  num power;
+  num chargeLevel;
+  bool critical;
+
+  FlowStorage.fromJson(Map map, this.energyUnit) {
+    status = map['status'];
+    power = map['currentPower'];
+    chargeLevel = map['chargeLevel'];
+    critical = map['critical'];
+  }
+}
+
+class PowerFlow {
+  String to;
+  String from;
+  FlowItem grid;
+  FlowItem load;
+  FlowItem pv;
+  FlowStorage storage;
+
+  PowerFlow.fromJson(Map map) {
+    var unit = map['unit'];
+    var tmp = map['connections'];
+    if (tmp != null) {
+      to = tmp['to'];
+      from = tmp['from'];
+    }
+    tmp = map['GRID'];
+    if (tmp != null) {
+      grid = new FlowItem(tmp['status'], tmp['currentPower'], unit);
+    }
+    tmp = map['LOAD'];
+    if (tmp != null) {
+      load = new FlowItem(tmp['status'], tmp['currentPower'], unit);
+    }
+    tmp = map['PV'];
+    if (tmp != null) {
+      pv = new FlowItem(tmp['status'], tmp['currentPower'], unit);
+    }
+    tmp = map['STORAGE'];
+    if (tmp != null) {
+      storage = new FlowStorage.fromJson(tmp, unit);
+    }
+  }
+}

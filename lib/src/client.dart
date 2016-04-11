@@ -186,6 +186,20 @@ class SeClient {
     return ov;
   }
 
+  /// Retrieve the [PowerFlow] for the specified [Site].
+  Future<PowerFlow> getPowerFlow(Site site) async {
+    if (site == null) return null;
+
+    PowerFlow pf;
+    var resp = await _getRequest(PathHelper.getPowerFlow(site), site.api);
+    if (resp != null) {
+      site.addCall();
+      pf = new PowerFlow.fromJson(resp['siteCurrentPowerFlow']);
+    }
+
+    return pf;
+  }
+
   /// Helper to simplify GET requests. Required a [String] path which should
   /// be the path part of the URL. The string API Key, and optionally any
   /// additional parameters to pass. Returns a Map result as decoded from JSON
@@ -235,4 +249,6 @@ abstract class PathHelper {
       'site/${site.id}/timeFrameEnergy.json';
   static String overview(Site site) =>
       'site/${site.id}/overview';
+  static String getPowerFlow(Site site) =>
+      'site/${site.id}/currentPowerFlow';
 }
