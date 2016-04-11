@@ -160,7 +160,9 @@ class SiteNode extends SimpleNode {
       LoadProductionDates.pathName: LoadProductionDates.definition(),
       GetEnergyMeasurements.pathName: GetEnergyMeasurements.definition(),
       GetTotalEnergy.pathName: GetTotalEnergy.definition(),
-      GetSitePower.pathName: GetSitePower.definition()
+      GetDetailedEnergy.pathName: GetDetailedEnergy.definition(),
+      GetSitePower.pathName: GetSitePower.definition(),
+      GetDetailedPower.pathName: GetDetailedPower.definition(),
     },
   };
 
@@ -188,6 +190,8 @@ class SiteNode extends SimpleNode {
     addMissing(GetTotalEnergy.pathName, GetTotalEnergy.definition());
     addMissing(GetSitePower.pathName, GetSitePower.definition());
     addMissing(OverviewNode.pathName, OverviewNode.definition());
+    addMissing(GetDetailedPower.pathName, GetDetailedPower.definition());
+    addMissing(GetDetailedEnergy.pathName, GetDetailedEnergy.definition());
   }
 
   void updateCalls() {

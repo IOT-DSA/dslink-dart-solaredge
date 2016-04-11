@@ -19,7 +19,11 @@ main(List<String> args) async {
       GetSitePower.isType: (String path) => new GetSitePower(path, client),
       OverviewNode.isType: (String path) => new OverviewNode(path, client),
       EngRevNode.isType: (String path) => new EngRevNode(path),
-      OverviewValue.isType: (String path) => new OverviewValue(path)
+      OverviewValue.isType: (String path) => new OverviewValue(path),
+      GetDetailedPower.isType: (String path) =>
+          new GetDetailedPower(path, client),
+      GetDetailedEnergy.isType: (String path) =>
+          new GetDetailedEnergy(path, client)
     },
     defaultNodes: {
       'Sites' : { AddSiteNode.pathName: AddSiteNode.definition() }
