@@ -111,6 +111,20 @@ class SeClient {
     return em;
   }
 
+  Future<DetailedMeasurements> getDetailedEnergy(Site site, Map params) async {
+    if (site == null || params == null) return null;
+
+    DetailedMeasurements dm;
+    var resp = await _getRequest(PathHelper.getDetailedEnergy(site), site.api,
+        params: params);
+    if (resp != null) {
+      site.addCall();
+      dm = new DetailedMeasurements.fromJson(resp['energyDetails']);
+    }
+
+    return dm;
+  }
+
   Future<EnergyMeasurements> getSitePower(Site site, Map params) async {
     if (site == null || params == null) return null;
 
@@ -123,6 +137,20 @@ class SeClient {
     }
 
     return em;
+  }
+
+  Future<DetailedMeasurements> getDetailedPower(Site site, Map params) async {
+    if (site == null || params == null) return null;
+
+    DetailedMeasurements dm;
+    var resp = await _getRequest(PathHelper.getDetailedPower(site), site.api,
+        params: params);
+    if (resp != null) {
+      site.addCall();
+      dm = new DetailedMeasurements.fromJson(resp['powerDetails']);
+    }
+
+    return dm;
   }
 
   /// Retrieves the Total energy produced for the specified [Site] in the time
@@ -197,8 +225,12 @@ abstract class PathHelper {
       'site/${site.id}/dataPeriod.json';
   static String getEnergy(Site site) =>
       'site/${site.id}/energy.json';
+  static String getDetailedEnergy(Site site) =>
+      'site/${site.id}/energyDetails';
   static String getPower(Site site) =>
       'site/${site.id}/power.json';
+  static String getDetailedPower(Site site) =>
+      'site/${site.id}/powerDetails';
   static String getTimeFrameEnergy(Site site) =>
       'site/${site.id}/timeFrameEnergy.json';
   static String overview(Site site) =>
