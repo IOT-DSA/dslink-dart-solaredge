@@ -4,10 +4,9 @@ import 'se_base.dart';
 import '../models.dart';
 import '../src/client.dart';
 
-
 class OverviewNode extends SeBase {
-  static const isType = 'overviewNode';
-  static const pathName = 'Overview';
+  static const String isType = 'overviewNode';
+  static const String pathName = 'Overview';
   static Map<String, dynamic> definition() => {
     r'$is' : isType,
     _lastUpdate :

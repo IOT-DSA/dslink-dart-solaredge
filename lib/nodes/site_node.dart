@@ -7,6 +7,7 @@ import '../src/client.dart';
 import '../models.dart';
 import 'overview_node.dart';
 import 'equipment_node.dart';
+import 'power_flow_node.dart';
 import 'get_energy.dart';
 import 'se_base.dart';
 
@@ -157,6 +158,7 @@ class SiteNode extends SimpleNode {
         r'?value' : site.dataEnd,
       },
       OverviewNode.pathName: OverviewNode.definition(),
+      PowerFlowNode.pathName: PowerFlowNode.definition(),
       LoadProductionDates.pathName: LoadProductionDates.definition(),
       GetEnergyMeasurements.pathName: GetEnergyMeasurements.definition(),
       GetTotalEnergy.pathName: GetTotalEnergy.definition(),
@@ -190,6 +192,7 @@ class SiteNode extends SimpleNode {
     addMissing(GetTotalEnergy.pathName, GetTotalEnergy.definition());
     addMissing(GetSitePower.pathName, GetSitePower.definition());
     addMissing(OverviewNode.pathName, OverviewNode.definition());
+    addMissing(PowerFlowNode.pathName, PowerFlowNode.definition());
     addMissing(GetDetailedPower.pathName, GetDetailedPower.definition());
     addMissing(GetDetailedEnergy.pathName, GetDetailedEnergy.definition());
   }

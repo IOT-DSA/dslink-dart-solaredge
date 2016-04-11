@@ -20,6 +20,8 @@ main(List<String> args) async {
       OverviewNode.isType: (String path) => new OverviewNode(path, client),
       EngRevNode.isType: (String path) => new EngRevNode(path),
       OverviewValue.isType: (String path) => new OverviewValue(path),
+      PowerFlowNode.isType: (String path) => new PowerFlowNode(path, client),
+      PowerFlowValue.isType: (String path) => new PowerFlowValue(path),
       GetDetailedPower.isType: (String path) =>
           new GetDetailedPower(path, client),
       GetDetailedEnergy.isType: (String path) =>
