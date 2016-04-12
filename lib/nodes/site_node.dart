@@ -5,10 +5,7 @@ import 'package:dslink/nodes.dart' show NodeNamer;
 
 import '../src/client.dart';
 import '../models.dart';
-import 'overview_node.dart';
-import 'equipment_node.dart';
-import 'power_flow_node.dart';
-import 'get_energy.dart';
+import '../nodes.dart';
 import 'se_base.dart';
 
 class SiteNode extends SimpleNode {
@@ -165,6 +162,7 @@ class SiteNode extends SimpleNode {
       GetDetailedEnergy.pathName: GetDetailedEnergy.definition(),
       GetSitePower.pathName: GetSitePower.definition(),
       GetDetailedPower.pathName: GetDetailedPower.definition(),
+      GetStorageData.pathName: GetStorageData.definition()
     },
   };
 
@@ -195,6 +193,7 @@ class SiteNode extends SimpleNode {
     addMissing(PowerFlowNode.pathName, PowerFlowNode.definition());
     addMissing(GetDetailedPower.pathName, GetDetailedPower.definition());
     addMissing(GetDetailedEnergy.pathName, GetDetailedEnergy.definition());
+    addMissing(GetStorageData.pathName, GetStorageData.definition());
   }
 
   void updateCalls() {

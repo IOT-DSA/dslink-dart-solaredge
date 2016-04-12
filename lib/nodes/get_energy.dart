@@ -67,10 +67,10 @@ class GetEnergyMeasurements extends SeCommand {
     switch (ind) {
       case 0:
       case 1:
-        if (diff.compareTo(_monthPeriod) > 0) return [];
+        if (diff.compareTo(_monthPeriod) > 0) return ret;
         break;
       case 2:
-        if (diff.compareTo(_yearPeriod) > 0) return [];
+        if (diff.compareTo(_yearPeriod) > 0) return ret;
         break;
     }
     var qParams = {};
