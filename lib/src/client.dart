@@ -200,6 +200,28 @@ class SeClient {
     return pf;
   }
 
+  /// Retrieve a list of [Battery]'s associated with the Storage for the
+  /// specified [Site]. Each battery has a list of [Telemetry] showing it's
+  /// state at a specific time.
+  Future<List<Battery>> getStorage(Site site, Map params) async {
+    if (site == null || params == null) return null;
+
+    List<Battery> list;
+    var resp = await _getRequest(PathHelper.getStorage(site), site.api,
+        params: params);
+    if (resp != null) {
+      site.addCall();
+      if (resp['storageData'] != null) {
+        list = new List<Battery>(resp['storageData']['batteryCount']);
+        for (var bat in resp['storageData']['batteries']) {
+          list.add(new Battery.fromJson(bat));
+        }
+      }
+    }
+
+    return list;
+  }
+
   /// Helper to simplify GET requests. Required a [String] path which should
   /// be the path part of the URL. The string API Key, and optionally any
   /// additional parameters to pass. Returns a Map result as decoded from JSON
@@ -251,4 +273,6 @@ abstract class PathHelper {
       'site/${site.id}/overview';
   static String getPowerFlow(Site site) =>
       'site/${site.id}/currentPowerFlow';
+  static String getStorage(Site site) =>
+      'site/${site.id}/storageData';
 }
