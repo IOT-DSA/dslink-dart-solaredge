@@ -222,6 +222,28 @@ class SeClient {
     return list;
   }
 
+  /// Retrieve a list of [InverterData] associate with the equipment at the
+  /// specified [Site]. Each data may contain a list of [PhaseData].
+  Future<List<InverterData>> getInverterData(Site site, String serial,
+      Map params) async {
+    if (site == null || params == null) return null;
+
+    List<InverterData> list;
+    var resp = await _getRequest(PathHelper.inverterData(site, serial), site.api,
+        params: params);
+    if (resp != null) {
+      site.addCall();
+      if (resp['data'] != null && resp['data']['telemetries'] != null) {
+        list = new List<InverterData>();
+        for (var data in resp['data']['telemetries']) {
+          list.add(new InverterData.fromJson(data));
+        }
+      }
+    }
+
+    return list;
+  }
+
   /// Helper to simplify GET requests. Required a [String] path which should
   /// be the path part of the URL. The string API Key, and optionally any
   /// additional parameters to pass. Returns a Map result as decoded from JSON
@@ -257,6 +279,8 @@ abstract class PathHelper {
       'site/$id/details.json';
   static String equipmentList(Site site) =>
       'equipment/${site.id}/list.json';
+  static String inverterData(Site site, String serialNumber) =>
+      'equipment/${site.id}/$serialNumber/data.json';
   static String productionDates(Site site) =>
       'site/${site.id}/dataPeriod.json';
   static String getEnergy(Site site) =>
