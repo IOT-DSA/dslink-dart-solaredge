@@ -26,3 +26,14 @@ class SensorConnections {
     }
   }
 }
+
+class SensorData {
+  String connectedTo;
+  String date;
+  Map measurements;
+
+  SensorData.fromJson(this.connectedTo, Map map) {
+    date = map['date'];
+    measurements = map..remove('date');
+  }
+}

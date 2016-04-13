@@ -264,6 +264,33 @@ class SeClient {
     return list;
   }
 
+  /// Retrieve a list of [SensorData] for the specified [Site] within the
+  /// time range specified by `startTime` and `endTime` in params Map.
+  Future<List<SensorData>> getSensorData(Site site, Map params) async {
+    if (site == null || params == null) return null;
+
+    List<SensorData> list;
+    var resp = await _getRequest(PathHelper.sensors(site), site.api,
+        params: params);
+    if (resp != null) {
+      site.addCall();
+      if (resp['SiteSensors'] != null && resp['SiteSensors']['list'] != null) {
+        list = new List<SensorData>();
+        for (var sense in resp['SiteSensors']['list']) {
+          if (sense['telemetries'] == null || sense['telemetries'].isEmpty) {
+            continue;
+          }
+          var gateway = sense['connectedTo'];
+          for (var telem in sense['telemetries']) {
+            list.add(new SensorData.fromJson(gateway, telem));
+          }
+        }
+      }
+    }
+
+    return list;
+  }
+
   /// Helper to simplify GET requests. Required a [String] path which should
   /// be the path part of the URL. The string API Key, and optionally any
   /// additional parameters to pass. Returns a Map result as decoded from JSON
