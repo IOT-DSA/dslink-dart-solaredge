@@ -154,16 +154,21 @@ class SiteNode extends SimpleNode {
         r'$type' : 'string',
         r'?value' : site.dataEnd,
       },
-      OverviewNode.pathName: OverviewNode.definition(),
-      PowerFlowNode.pathName: PowerFlowNode.definition(),
-      LoadProductionDates.pathName: LoadProductionDates.definition(),
-      GetEnergyMeasurements.pathName: GetEnergyMeasurements.definition(),
-      GetTotalEnergy.pathName: GetTotalEnergy.definition(),
-      GetDetailedEnergy.pathName: GetDetailedEnergy.definition(),
-      GetSitePower.pathName: GetSitePower.definition(),
-      GetDetailedPower.pathName: GetDetailedPower.definition(),
-      GetStorageData.pathName: GetStorageData.definition()
     },
+    'sensors' : {
+      r'$name': 'Sensors',
+      LoadSensors.pathName: LoadSensors.definition(),
+//        GetSensorData.pathName: GetSensorData.definition()
+    },
+    OverviewNode.pathName: OverviewNode.definition(),
+    PowerFlowNode.pathName: PowerFlowNode.definition(),
+    LoadProductionDates.pathName: LoadProductionDates.definition(),
+    GetEnergyMeasurements.pathName: GetEnergyMeasurements.definition(),
+    GetTotalEnergy.pathName: GetTotalEnergy.definition(),
+    GetDetailedEnergy.pathName: GetDetailedEnergy.definition(),
+    GetSitePower.pathName: GetSitePower.definition(),
+    GetDetailedPower.pathName: GetDetailedPower.definition(),
+    GetStorageData.pathName: GetStorageData.definition()
   };
 
   Site site;
@@ -179,21 +184,6 @@ class SiteNode extends SimpleNode {
       this.site = site;
     });
 
-    /// TODO: Remove these when done testing.
-    void addMissing(String npath, Map definition) {
-      var nd = provider.getNode('$path/$npath');
-      if (nd == null) {
-        provider.addNode('$path/$npath', definition);
-      }
-    }
-    addMissing(GetEnergyMeasurements.pathName, GetEnergyMeasurements.definition());
-    addMissing(GetTotalEnergy.pathName, GetTotalEnergy.definition());
-    addMissing(GetSitePower.pathName, GetSitePower.definition());
-    addMissing(OverviewNode.pathName, OverviewNode.definition());
-    addMissing(PowerFlowNode.pathName, PowerFlowNode.definition());
-    addMissing(GetDetailedPower.pathName, GetDetailedPower.definition());
-    addMissing(GetDetailedEnergy.pathName, GetDetailedEnergy.definition());
-    addMissing(GetStorageData.pathName, GetStorageData.definition());
   }
 
   void updateCalls() {

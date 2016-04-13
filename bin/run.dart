@@ -28,6 +28,8 @@ main(List<String> args) async {
       GetDetailedEnergy.isType: (String path) =>
           new GetDetailedEnergy(path, client),
       GetStorageData.isType: (String path) => new GetStorageData(path, client),
+      LoadSensors.isType: (String path) => new LoadSensors(path, client),
+      SensorNode.isType: (String path) => new SensorNode(path)
     },
     defaultNodes: {
       'Sites' : { AddSiteNode.pathName: AddSiteNode.definition() }
