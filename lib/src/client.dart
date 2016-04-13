@@ -244,6 +244,26 @@ class SeClient {
     return list;
   }
 
+  /// Retrieve a list of [SensorConnections] for the specified [Site]. Each
+  /// connection contains a list of [Sensor]s.
+  Future<List<SensorConnections>> loadSensors(Site site) async {
+    if (site == null) return null;
+
+    List<SensorConnections> list;
+    var resp = await _getRequest(PathHelper.sensors(site), site.api);
+    if (resp != null) {
+      site.addCall();
+      if (resp['SiteSensors'] != null && resp['SiteSensors']['list'] != null) {
+        list = new List<SensorConnections>();
+        for (var conn in resp['SiteSensors']['list']) {
+          list.add(new SensorConnections.fromJson(conn));
+        }
+      }
+    }
+
+    return list;
+  }
+
   /// Helper to simplify GET requests. Required a [String] path which should
   /// be the path part of the URL. The string API Key, and optionally any
   /// additional parameters to pass. Returns a Map result as decoded from JSON
@@ -299,4 +319,6 @@ abstract class PathHelper {
       'site/${site.id}/currentPowerFlow';
   static String getStorage(Site site) =>
       'site/${site.id}/storageData';
+  static String sensors(Site site) =>
+      'equipment/${site.id}/sensors';
 }
