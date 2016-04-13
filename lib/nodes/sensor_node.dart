@@ -86,3 +86,82 @@ class LoadSensors extends SeCommand {
     return ret;
   }
 }
+
+class GetSensorData extends SeCommand {
+  static const String isType = 'getSensorData';
+  static const String pathName = 'Get_Sensor_Data';
+
+  static const String _dateRange = 'dateRange';
+  static const String _date = 'date';
+  static const String _connectedTo = 'connectedTo';
+  static const String _measurement = 'measurement';
+  static const String _value = 'value';
+  static const Duration _weekPeriod = const Duration(days: 7);
+
+  static Map<String, dynamic> definition() => {
+    r'$is' : isType,
+    r'$name' : 'Get Inverter Data',
+    r'$invokable' : 'write',
+    r'$params' : [
+      { 'name': _dateRange, 'type': 'string', 'editor': 'daterange' }
+    ],
+    r'$result': 'table',
+    r'$columns' : [
+      { 'name': _connectedTo, 'type': 'string', 'default': '' },
+      { 'name': _date, 'type': 'string', 'default': '00-00-0000 00:00:00'},
+      { 'name': _measurement, 'type': 'string', 'default': '' },
+      { 'name': _value, 'type': 'number', 'default': 0 }
+    ]
+  };
+
+  final SeClient client;
+
+  GetSensorData(String path, this.client) : super(path);
+
+  @override
+  Future<List<Map>> onInvoke(Map<String, dynamic> params) async {
+    var ret = new List<Map>();
+
+    var dates = params[_dateRange]?.split('/');
+    if (dates == null || dates.length != 2) return ret;
+
+    DateTime startDate;
+    DateTime endDate;
+    try {
+      startDate = DateTime.parse(dates[0]);
+      endDate = DateTime.parse(dates[1]);
+    } on FormatException {
+      return ret;
+    }
+
+    if (startDate.compareTo(endDate) >= 0) {
+      return ret;
+    }
+
+    var diff = endDate.difference(startDate);
+    if (diff.compareTo(_weekPeriod) > 0) return ret;
+
+    var qParams = {};
+    var startStr = startDate.toString();
+    var endStr = endDate.toString();
+    qParams['startTime'] = startStr.substring(0, startStr.length - 4);
+    qParams['endTime'] = endStr.substring(0, endStr.length - 4);
+    var site = getSite();
+    var result = await client.getSensorData(site, qParams);
+    updateCalls();
+    if (result == null) return ret;
+
+    for (var sense in result) {
+      for (var key in sense.measurements) {
+        var mp = {};
+        mp[_connectedTo] = sense.connectedTo;
+        mp[_date] = sense.date;
+        mp[_measurement] = key;
+        mp[_value] = sense.measurements[key];
+        ret.add(mp);
+      }
+    }
+
+    return ret;
+  }
+}

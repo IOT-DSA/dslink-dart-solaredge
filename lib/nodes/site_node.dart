@@ -158,7 +158,7 @@ class SiteNode extends SimpleNode {
     'sensors' : {
       r'$name': 'Sensors',
       LoadSensors.pathName: LoadSensors.definition(),
-//        GetSensorData.pathName: GetSensorData.definition()
+      GetSensorData.pathName: GetSensorData.definition()
     },
     OverviewNode.pathName: OverviewNode.definition(),
     PowerFlowNode.pathName: PowerFlowNode.definition(),
