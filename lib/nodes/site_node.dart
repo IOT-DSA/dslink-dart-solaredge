@@ -294,8 +294,8 @@ class LoadProductionDates extends SeCommand {
     updateCalls();
     if (result != null) {
       var pPath = parent.path;
-      provider.updateValue('$pPath/productionStart', site.dataStart);
-      provider.updateValue('$pPath/productionEnd', site.dataEnd);
+      provider.updateValue('$pPath/energyProductionDates/productionStart', site.dataStart);
+      provider.updateValue('$pPath/energyProductionDates/productionEnd', site.dataEnd);
       ret[_success] = true;
       ret[_message] = 'Success!';
     } else {

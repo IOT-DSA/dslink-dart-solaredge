@@ -310,7 +310,7 @@ class GetDetailedPower extends SeCommand {
         mp[_type] = key;
         mp[_value] = em.measurements[key].value;
         mp[_energyUnit] = em.measurements[key].energyUnit;
-        ret.addAll(mp);
+        ret.add(mp);
       }
     }
 
@@ -414,7 +414,7 @@ class GetDetailedEnergy extends SeCommand {
         mp[_type] = key;
         mp[_value] = em.measurements[key].value;
         mp[_energyUnit] = em.measurements[key].energyUnit;
-        ret.addAll(mp);
+        ret.add(mp);
       }
     }
 
