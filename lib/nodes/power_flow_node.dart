@@ -133,7 +133,9 @@ class PowerFlowValue extends SeBase {
 
   PowerFlowNode _pf;
 
-  PowerFlowValue(String path) : super(path);
+  PowerFlowValue(String path) : super(path) {
+    serializable = true;
+  }
 
   PowerFlowNode _getPf() {
     var p = parent;

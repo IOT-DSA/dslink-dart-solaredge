@@ -88,7 +88,9 @@ class EngRevNode extends SeBase {
 
   static const String _energy = 'energy';
   static const String _revenue = 'revenue';
-  EngRevNode(String path) : super(path);
+  EngRevNode(String path) : super(path) {
+    serializable = true;
+  }
 
   void update(EnergyRevenue energyRevenue) {
     provider.updateValue('$path/$_energy', energyRevenue.energy);
