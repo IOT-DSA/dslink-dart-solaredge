@@ -30,7 +30,9 @@ class OverviewNode extends SeBase {
   Timer _timer;
   Site site;
 
-  OverviewNode(String path, this.client) : super(path);
+  OverviewNode(String path, this.client) : super(path) {
+    serializable = true;
+  }
 
   @override
   void onSubscribe() {

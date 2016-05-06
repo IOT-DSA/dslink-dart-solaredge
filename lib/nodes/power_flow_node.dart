@@ -57,7 +57,9 @@ class PowerFlowNode extends SeBase {
   Timer _timer;
   Site site;
 
-  PowerFlowNode(String path, this.client) : super(path);
+  PowerFlowNode(String path, this.client) : super(path) {
+    serializable = true;
+  }
 
   @override
   void onSubscribe() {

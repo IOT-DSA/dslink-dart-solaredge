@@ -168,7 +168,8 @@ class SiteNode extends SimpleNode {
     GetDetailedEnergy.pathName: GetDetailedEnergy.definition(),
     GetSitePower.pathName: GetSitePower.definition(),
     GetDetailedPower.pathName: GetDetailedPower.definition(),
-    GetStorageData.pathName: GetStorageData.definition()
+    GetStorageData.pathName: GetStorageData.definition(),
+    RemoveSiteNode.pathName: RemoveSiteNode.definition()
   };
 
   Site site;
@@ -193,6 +194,34 @@ class SiteNode extends SimpleNode {
   }
 }
 
+class RemoveSiteNode extends SimpleNode {
+  static const String isType = 'removeSiteNode';
+  static const String pathName = 'Remove_Site';
+
+  static const String _success = 'success';
+  static const String _message = 'message';
+
+  static Map<String, dynamic> definition() => {
+    r'$is' : isType,
+    r'$name' : 'Remove Site',
+    r'$invokable' : 'write',
+    r'$params' : [],
+    r'$columns' : [
+      { 'name' : _success, 'type' : 'bool', 'default' : false },
+      { 'name' : _message, 'type' : 'string', 'default': '' }
+    ]
+  };
+
+  RemoveSiteNode(String path) : super(path);
+
+  @override
+  Future<Map<String, dynamic>> onInvoke(Map<String, dynamic> params) async {
+    var ret = { _success: true, _message : 'Success!' };
+
+    parent.remove();
+    return ret;
+  }
+}
 
 class AddSiteNode extends SimpleNode {
   static const String isType = 'addSiteNode';
