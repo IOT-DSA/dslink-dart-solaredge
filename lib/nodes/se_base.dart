@@ -4,9 +4,7 @@ import 'site_node.dart';
 import '../models.dart';
 
 abstract class SeBase extends SimpleNode {
-  SeBase(String path) : super(path) {
-    serializable = false;
-  }
+  SeBase(String path) : super(path);
 
   SiteNode getSiteNode() {
     var p = parent;

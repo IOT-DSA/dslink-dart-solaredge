@@ -57,9 +57,7 @@ class PowerFlowNode extends SeBase {
   Timer _timer;
   Site site;
 
-  PowerFlowNode(String path, this.client) : super(path) {
-    serializable = true;
-  }
+  PowerFlowNode(String path, this.client) : super(path);
 
   @override
   void onSubscribe() {
@@ -133,9 +131,7 @@ class PowerFlowValue extends SeBase {
 
   PowerFlowNode _pf;
 
-  PowerFlowValue(String path) : super(path) {
-    serializable = true;
-  }
+  PowerFlowValue(String path) : super(path);
 
   PowerFlowNode _getPf() {
     var p = parent;

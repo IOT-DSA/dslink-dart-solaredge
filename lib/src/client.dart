@@ -296,12 +296,12 @@ class SeClient {
   /// additional parameters to pass. Returns a Map result as decoded from JSON
   /// or NULL on error.
   Future<Map> _getRequest(String path, String api, {Map params}) async {
-    var qParams = _queryParam;
+    var qParams = <String, String>{}..addAll(_queryParam);
     qParams[_apiKey] = api;
     if (params != null) {
       qParams.addAll(params);
     }
-
+    print('Query params; $qParams');
     var uri = rootHost.replace(path: path, queryParameters: qParams);
 
     Map map;

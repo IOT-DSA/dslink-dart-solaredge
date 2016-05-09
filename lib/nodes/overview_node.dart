@@ -109,7 +109,9 @@ class OverviewValue extends SeBase {
 
   OverviewNode _overview;
 
-  OverviewValue(String path) : super(path);
+  OverviewValue(String path) : super(path) {
+    serializable = true;
+  }
 
   OverviewNode _getOverview() {
     var p = parent;
