@@ -301,7 +301,6 @@ class SeClient {
     if (params != null) {
       qParams.addAll(params);
     }
-    print('Query params; $qParams');
     var uri = rootHost.replace(path: path, queryParameters: qParams);
 
     Map map;
