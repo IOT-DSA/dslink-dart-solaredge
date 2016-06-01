@@ -270,13 +270,13 @@ class SeClient {
     if (site == null || params == null) return null;
 
     List<SensorData> list;
-    var resp = await _getRequest(PathHelper.sensors(site), site.api,
+    var resp = await _getRequest(PathHelper.sensorData(site), site.api,
         params: params);
     if (resp != null) {
       site.addCall();
-      if (resp['SiteSensors'] != null && resp['SiteSensors']['list'] != null) {
+      if (resp['siteSensors'] != null && resp['siteSensors']['data'] != null) {
         list = new List<SensorData>();
-        for (var sense in resp['SiteSensors']['list']) {
+        for (var sense in resp['siteSensors']['data']) {
           if (sense['telemetries'] == null || sense['telemetries'].isEmpty) {
             continue;
           }
@@ -347,4 +347,6 @@ abstract class PathHelper {
       'site/${site.id}/storageData';
   static String sensors(Site site) =>
       'equipment/${site.id}/sensors';
+  static String sensorData(Site site) =>
+      'site/${site.id}/sensors';
 }

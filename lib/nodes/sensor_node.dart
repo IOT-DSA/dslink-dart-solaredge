@@ -100,7 +100,7 @@ class GetSensorData extends SeCommand {
 
   static Map<String, dynamic> definition() => {
     r'$is' : isType,
-    r'$name' : 'Get Inverter Data',
+    r'$name' : 'Get Sensor Data',
     r'$invokable' : 'write',
     r'$params' : [
       { 'name': _dateRange, 'type': 'string', 'editor': 'daterange' }
@@ -144,22 +144,22 @@ class GetSensorData extends SeCommand {
     var qParams = {};
     var startStr = startDate.toString();
     var endStr = endDate.toString();
-    qParams['startTime'] = startStr.substring(0, startStr.length - 4);
-    qParams['endTime'] = endStr.substring(0, endStr.length - 4);
+    qParams['startDate'] = startStr.substring(0, startStr.length - 4);
+    qParams['endDate'] = endStr.substring(0, endStr.length - 4);
     var site = getSite();
     var result = await client.getSensorData(site, qParams);
     updateCalls();
     if (result == null) return ret;
 
     for (var sense in result) {
-      for (var key in sense.measurements) {
+      sense.measurements.forEach((key, val) {
         var mp = {};
         mp[_connectedTo] = sense.connectedTo;
         mp[_date] = sense.date;
         mp[_measurement] = key;
-        mp[_value] = sense.measurements[key];
+        mp[_value] = val;
         ret.add(mp);
-      }
+      });
     }
 
     return ret;
