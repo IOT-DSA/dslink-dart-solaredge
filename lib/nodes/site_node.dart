@@ -217,13 +217,17 @@ class RemoveSiteNode extends SimpleNode {
     ]
   };
 
-  RemoveSiteNode(String path) : super(path);
+  final LinkProvider link;
+
+  RemoveSiteNode(String path, this.link) : super(path);
 
   @override
   Future<Map<String, dynamic>> onInvoke(Map<String, dynamic> params) async {
     var ret = { _success: true, _message : 'Success!' };
 
     parent.remove();
+
+    link.save();
     return ret;
   }
 }
