@@ -305,12 +305,17 @@ class SeClient {
 
     Map map;
     try {
-      logger.warning('Connecting to: $uri');
+      logger.finest('Connecting to: $uri');
       var resp = await _client.get(uri, headers: _headers);
-      logger.warning('Response: ${resp.statusCode}');
-      logger.warning('Response: ${resp.body}');
+      logger.finest('Response: ${resp.statusCode}');
+      logger.finest('Response: ${resp.body}');
       if (resp.statusCode == HttpStatus.OK) {
         map = JSON.decode(resp.body);
+      } else if (resp.statusCode == 429) {
+        logger.warning('Daily request limit has been reached.');
+      } else {
+        logger.warning('Response status was: '
+            '${resp.statusCode} - ${resp.reasonPhrase}');
       }
     } catch (e, s) {
       logger.warning('Unable to retrieve request', e, s);
