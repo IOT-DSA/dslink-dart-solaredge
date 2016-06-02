@@ -66,7 +66,7 @@ class LoadEquipment extends SeCommand {
   Future<Map<String, dynamic>> onInvoke(Map<String, dynamic> params) async {
     var ret = { _success: false, _message: '' };
 
-    var site = getSite();
+    var site = await getSite();
 
     var list = await client.loadEquipment(site);
     updateCalls();
@@ -156,7 +156,7 @@ class GetInverterData extends SeCommand {
     var endStr = endDate.toString();
     qParams['startTime'] = startStr.substring(0, startStr.length - 4);
     qParams['endTime'] = endStr.substring(0, endStr.length - 4);
-    var site = getSite();
+    var site = await getSite();
     var serial = (parent as EquipmentNode).serial;
     var result = await client.getInverterData(site, serial, qParams);
     updateCalls();

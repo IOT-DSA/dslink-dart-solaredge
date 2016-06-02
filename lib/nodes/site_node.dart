@@ -161,7 +161,7 @@ class SiteNode extends SimpleNode {
       GetSensorData.pathName: GetSensorData.definition()
     },
     OverviewNode.pathName: OverviewNode.definition(),
-    PowerFlowNode.pathName: PowerFlowNode.definition(),
+//    PowerFlowNode.pathName: PowerFlowNode.definition(),
     LoadProductionDates.pathName: LoadProductionDates.definition(),
     GetEnergyMeasurements.pathName: GetEnergyMeasurements.definition(),
     GetTotalEnergy.pathName: GetTotalEnergy.definition(),
@@ -172,24 +172,29 @@ class SiteNode extends SimpleNode {
     RemoveSiteNode.pathName: RemoveSiteNode.definition()
   };
 
-  Site site;
+  Future<Site> getSite() => _siteComp.future;
+  Completer<Site> _siteComp;
+  Site _site;
   SeClient client;
 
-  SiteNode(String path, this.client) : super(path);
+  SiteNode(String path, this.client) : super(path) {
+    _siteComp = new Completer<Site>();
+  }
 
   @override
   void onCreated() {
     var api = getConfig(r'$$se_api');
     var id = getConfig(r'$$se_id');
     client.addSite(id, api).then((Site site) {
-      this.site = site;
+      this._site = site;
+      _siteComp.complete(site);
     });
 
   }
 
   void updateCalls() {
-    if (site != null) {
-      provider.updateValue('$path/apiCalls', site.calls);
+    if (_site != null) {
+      provider.updateValue('$path/apiCalls', _site.calls);
     }
   }
 }
@@ -318,7 +323,7 @@ class LoadProductionDates extends SeCommand {
   Future<Map<String, dynamic>> onInvoke(Map<String, dynamic> params) async {
     var ret = { _success: false, _message : '' };
 
-    var site = getSite();
+    var site = await getSite();
     var result = await client.loadProductionDates(site);
     updateCalls();
     if (result != null) {

@@ -66,7 +66,7 @@ class GetStorageData extends SeCommand {
     var endStr = endDate.toString();
     qParams['startTime'] = startStr.substring(0, startStr.length - 4);
     qParams['endTime'] = endStr.substring(0, endStr.length - 4);
-    var site = getSite();
+    var site = await getSite();
     var result = await client.getStorage(site, qParams);
     updateCalls();
     if (result == null) return ret;

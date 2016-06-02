@@ -58,7 +58,7 @@ class LoadSensors extends SeCommand {
   Future<Map<String, dynamic>> onInvoke(Map<String, dynamic> params) async {
     var ret = { _success: false, _message : '' };
 
-    var site = getSite();
+    var site = await getSite();
     var resp = await client.loadSensors(site);
     updateCalls();
     if (resp != null || resp.isNotEmpty) {
@@ -146,7 +146,7 @@ class GetSensorData extends SeCommand {
     var endStr = endDate.toString();
     qParams['startDate'] = startStr.substring(0, startStr.length - 4);
     qParams['endDate'] = endStr.substring(0, endStr.length - 4);
-    var site = getSite();
+    var site = await getSite();
     var result = await client.getSensorData(site, qParams);
     updateCalls();
     if (result == null) return ret;

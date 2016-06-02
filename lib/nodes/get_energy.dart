@@ -79,7 +79,7 @@ class GetEnergyMeasurements extends SeCommand {
     '${startDate.year}-${startDate.month}-${startDate.day}';
     qParams['endDate'] = '${endDate.year}-${endDate.month}-${endDate.day}';
 
-    var site = getSite();
+    var site = await getSite();
     var result = await client.getSiteEnergy(site, qParams);
     updateCalls();
     if (result == null) return ret;
@@ -147,7 +147,7 @@ class GetTotalEnergy extends SeCommand {
     '${startDate.year}-${startDate.month}-${startDate.day}';
     qParams['endDate'] = '${endDate.year}-${endDate.month}-${endDate.day}';
 
-    var site = getSite();
+    var site = await getSite();
     var result = await client.getTotalEnergy(site, qParams);
     updateCalls();
     if (result == null) return ret;
@@ -219,7 +219,7 @@ class GetSitePower extends SeCommand {
     var endStr = endDate.toString();
     qParams['startTime'] = startStr.substring(0, startStr.length - 4);
     qParams['endTime'] = endStr.substring(0, endStr.length - 4);
-    var site = getSite();
+    var site = await getSite();
     var result = await client.getSitePower(site, qParams);
     updateCalls();
     if (result == null) return ret;
@@ -298,7 +298,7 @@ class GetDetailedPower extends SeCommand {
     var endStr = endDate.toString();
     qParams['startTime'] = startStr.substring(0, startStr.length - 4);
     qParams['endTime'] = endStr.substring(0, endStr.length - 4);
-    var site = getSite();
+    var site = await getSite();
     var result = await client.getDetailedPower(site, qParams);
     updateCalls();
     if (result == null) return ret;
@@ -402,7 +402,7 @@ class GetDetailedEnergy extends SeCommand {
     qParams['startTime'] = startStr.substring(0, startStr.length - 4);
     qParams['endTime'] = endStr.substring(0, endStr.length - 4);
 
-    var site = getSite();
+    var site = await getSite();
     var result = await client.getDetailedEnergy(site, qParams);
     updateCalls();
     if (result == null) return ret;

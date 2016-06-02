@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:dslink/dslink.dart';
+
 import 'se_base.dart';
 import '../models.dart';
 import '../src/client.dart';
@@ -30,14 +32,15 @@ class OverviewNode extends SeBase {
   Timer _timer;
   Site site;
 
-  OverviewNode(String path, this.client) : super(path) {
+  final LinkProvider link;
+
+  OverviewNode(String path, this.client, this.link) : super(path) {
     serializable = true;
   }
 
   @override
   void onSubscribe() {
     subscriptions += 1;
-
     if ((_timer == null || !_timer.isActive) && subscriptions == 1) {
       _timerUpdate(null);
     }
@@ -61,7 +64,7 @@ class OverviewNode extends SeBase {
       _timer = new Timer.periodic(new Duration(minutes: 10), _timerUpdate);
     }
 
-    site ??= getSite();
+    site ??= await getSite();
 
     var resp = await client.getOverview(site);
     updateCalls();
@@ -74,6 +77,8 @@ class OverviewNode extends SeBase {
       updateChild(_lastYearData, resp.lastYearData);
       updateChild(_lastMonthData, resp.lastMonthData);
       updateChild(_lastDayData, resp.lastDayData);
+
+      link.save();
     }
   }
 }

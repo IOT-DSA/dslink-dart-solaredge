@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dslink/dslink.dart';
 
 import 'site_node.dart';
@@ -15,7 +17,7 @@ abstract class SeBase extends SimpleNode {
     return p;
   }
 
-  Site getSite() => getSiteNode()?.site;
+  Future<Site> getSite() => getSiteNode()?.getSite();
 
   void updateCalls() => getSiteNode()?.updateCalls();
 }

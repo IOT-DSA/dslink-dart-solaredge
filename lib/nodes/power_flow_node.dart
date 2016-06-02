@@ -81,7 +81,7 @@ class PowerFlowNode extends SeBase {
       _timer = new Timer.periodic(new Duration(minutes: 10), _timerUpdate);
     }
 
-    site ??= getSite();
+    site ??= await getSite();
 
     var resp = await client.getPowerFlow(site);
     updateCalls();
