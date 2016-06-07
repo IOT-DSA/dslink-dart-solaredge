@@ -19,6 +19,9 @@
     },
     "token" : {
       "type" : "string"
+    },
+    "log" : {
+      "type" : "enum"
     }
   }
 }
