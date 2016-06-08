@@ -30,9 +30,7 @@ class EquipmentNode extends SeBase {
   String serial;
 
   SeClient client;
-  EquipmentNode(String path, this.client) : super(path) {
-    this.serializable = false;
-  }
+  EquipmentNode(String path, this.client) : super(path);
 
   @override
   void onCreated() {

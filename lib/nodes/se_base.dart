@@ -23,7 +23,5 @@ abstract class SeBase extends SimpleNode {
 }
 
 abstract class SeCommand extends SeBase {
-  SeCommand(String path) : super(path) {
-    serializable = true;
-  }
+  SeCommand(String path) : super(path);
 }
