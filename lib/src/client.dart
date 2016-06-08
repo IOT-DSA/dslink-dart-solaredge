@@ -314,7 +314,7 @@ class SeClient {
       } else if (resp.statusCode == 429) {
         logger.warning('Daily request limit has been reached.');
       } else {
-        logger.warning('Response status was: '
+        logger.warning('$uri - Response: '
             '${resp.statusCode} - ${resp.reasonPhrase}');
       }
     } catch (e, s) {
