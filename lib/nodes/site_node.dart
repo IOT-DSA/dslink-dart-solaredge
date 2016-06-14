@@ -138,9 +138,13 @@ class SiteNode extends SimpleNode {
       },
     },
     'apiCalls' : {
-      r'$name' : 'API Calls',
-      r'$type' : 'number',
-      r'?value' : site.calls,
+      'numCalls' : {
+        r'$name' : 'Number of Calls',
+        r'$type' : 'number',
+        r'?value' : site.calls,
+      },
+      'startTime' : ApiCallTime.definition(site, "Start Time", false),
+      'endTime': ApiCallTime.definition(site, "End Time", true)
     },
     'energyProductionDates': {
       r'$name': 'Energy Production Dates',
@@ -161,7 +165,6 @@ class SiteNode extends SimpleNode {
       GetSensorData.pathName: GetSensorData.definition()
     },
     OverviewNode.pathName: OverviewNode.definition(),
-//    PowerFlowNode.pathName: PowerFlowNode.definition(),
     LoadProductionDates.pathName: LoadProductionDates.definition(),
     GetEnergyMeasurements.pathName: GetEnergyMeasurements.definition(),
     GetTotalEnergy.pathName: GetTotalEnergy.definition(),
@@ -186,8 +189,17 @@ class SiteNode extends SimpleNode {
     var api = getConfig(r'$$se_api');
     var id = getConfig(r'$$se_id');
     client.addSite(id, api).then((Site site) {
-      this._site = site;
-      _siteComp.complete(site);
+      var nd = provider.getNode('$path/apiCalls/startTime');
+      if (nd != null) {
+        site.callStart = nd.value.toInt();
+      }
+      nd = provider.getNode('$path/apiCalls/endTime');
+      if (nd != null) {
+        site.callEnd = nd.value.toInt();
+      }
+
+      _site = site;
+      _siteComp.complete(_site);
     });
 
   }
@@ -196,6 +208,37 @@ class SiteNode extends SimpleNode {
     if (_site != null) {
       provider.updateValue('$path/apiCalls', _site.calls);
     }
+  }
+
+  void updateCallTime(int time, bool isEnd) {
+    if (isEnd) {
+      _site.callEnd = time;
+    } else {
+      _site.callStart = time;
+    }
+  }
+}
+
+class ApiCallTime extends SeBase {
+  static const String isType = 'apiCallTime';
+
+  static const String _isEnd = r'$$callEnd';
+
+  static Map<String, dynamic> definition(Site site, String name, bool end) => {
+    _isEnd: end,
+    r'$is' : isType,
+    r'$name': name,
+    r'$writable' : 'write',
+    r'$type': 'number',
+    r'?value': (end ? site.callEnd : site.callStart)
+  };
+
+  ApiCallTime(String path) : super(path);
+
+  bool onSetValue(value) {
+    var end = getConfig(_isEnd) as bool;
+    getSiteNode().updateCallTime(value.toInt(), end);
+    return false;
   }
 }
 

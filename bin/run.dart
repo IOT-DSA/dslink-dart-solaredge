@@ -11,6 +11,7 @@ main(List<String> args) async {
       AddSiteNode.isType: (String path) => new AddSiteNode(path, client, link),
       RemoveSiteNode.isType: (String path) => new RemoveSiteNode(path, link),
       SiteNode.isType: (String path) => new SiteNode(path, client),
+      ApiCallTime.isType: (String path) => new ApiCallTime(path),
       LoadEquipment.isType: (String path) => new LoadEquipment(path, client),
       EquipmentNode.isType: (String path) => new EquipmentNode(path, client),
       GetInverterData.isType: (String path) => new GetInverterData(path, client),
@@ -23,8 +24,6 @@ main(List<String> args) async {
       OverviewNode.isType: (String path) => new OverviewNode(path, client, link),
       EngRevNode.isType: (String path) => new EngRevNode(path),
       OverviewValue.isType: (String path) => new OverviewValue(path),
-//      PowerFlowNode.isType: (String path) => new PowerFlowNode(path, client),
-//      PowerFlowValue.isType: (String path) => new PowerFlowValue(path),
       GetDetailedPower.isType: (String path) =>
           new GetDetailedPower(path, client),
       GetDetailedEnergy.isType: (String path) =>

@@ -10,27 +10,30 @@ class OverviewNode extends SeBase {
   static const String isType = 'overviewNode';
   static const String pathName = 'Overview';
   static Map<String, dynamic> definition() => {
-    r'$is' : isType,
-    _lastUpdate :
-      OverviewValue.definition('Last Update Time', 'string', '0000-00-00'),
-    _currentPower : OverviewValue.definition('Current Power', 'number', 0),
-    _lifeTimeData : EngRevNode.definition(),
-    _lastYearData : EngRevNode.definition(),
-    _lastMonthData: EngRevNode.definition(),
-    _lastDayData: EngRevNode.definition(),
-  };
+        r'$is': isType,
+        _lastUpdateTime: OverviewValue.definition(
+            'Last Update Time', 'string', '0000-00-00'),
+        _currentPower: OverviewValue.definition('Current Power', 'number', 0),
+        _lifeTimeData: EngRevNode.definition(),
+        _lastYearData: EngRevNode.definition(),
+        _lastMonthData: EngRevNode.definition(),
+        _lastDayData: EngRevNode.definition(),
+      };
 
-  static const String _lastUpdate = 'lastUpdateTime';
+  static const String _lastUpdateTime = 'lastUpdateTime';
   static const String _lifeTimeData = 'lifeTimeData';
   static const String _lastYearData = 'lastYearData';
   static const String _lastMonthData = 'lastMonthData';
   static const String _lastDayData = 'lastDayData';
   static const String _currentPower = 'currentPower';
 
+  static const Duration _minInterval = const Duration(minutes: 15);
+
   final SeClient client;
   int subscriptions = 0;
   Timer _timer;
   Site site;
+  DateTime _lastUpdate;
 
   final LinkProvider link;
 
@@ -61,16 +64,26 @@ class OverviewNode extends SeBase {
     }
 
     if (_timer == null || !_timer.isActive) {
-      _timer = new Timer.periodic(new Duration(minutes: 10), _timerUpdate);
+      _timer = new Timer.periodic(_minInterval, _timerUpdate);
+    }
+
+    var curTime = new DateTime.now();
+    if (_lastUpdate != null && _minInterval > curTime.difference(_lastUpdate)) {
+      return;
     }
 
     site ??= await getSite();
 
+    if (curTime.hour < site.callStart || curTime.hour >= site.callEnd) {
+      return;
+    }
+
     var resp = await client.getOverview(site);
     updateCalls();
-
+    _lastUpdate = curTime;
     if (resp != null) {
-      provider.updateValue('$path/$_lastUpdate', (resp.lastUpdate ?? 'null'));
+      provider.updateValue(
+          '$path/$_lastUpdateTime', (resp.lastUpdate ?? 'null'));
       provider.updateValue('$path/$_currentPower', resp.currentPower);
 
       updateChild(_lifeTimeData, resp.lifeTimeData);
@@ -86,10 +99,10 @@ class OverviewNode extends SeBase {
 class EngRevNode extends SeBase {
   static const isType = 'energyRevenueNode';
   static Map<String, dynamic> definition() => {
-    r'$is': isType,
-    _energy : OverviewValue.definition('Energy', 'number', 0),
-    _revenue : OverviewValue.definition('Revenue', 'number', 0)
-  };
+        r'$is': isType,
+        _energy: OverviewValue.definition('Energy', 'number', 0),
+        _revenue: OverviewValue.definition('Revenue', 'number', 0)
+      };
 
   static const String _energy = 'energy';
   static const String _revenue = 'revenue';
@@ -105,12 +118,8 @@ class EngRevNode extends SeBase {
 
 class OverviewValue extends SeBase {
   static const String isType = 'overviewValue';
-  static Map<String, dynamic> definition(String name, String type, value) => {
-    r'$is' : isType,
-    r'$name': name,
-    r'$type': type,
-    r'?value': value
-  };
+  static Map<String, dynamic> definition(String name, String type, value) =>
+      {r'$is': isType, r'$name': name, r'$type': type, r'?value': value};
 
   OverviewNode _overview;
 

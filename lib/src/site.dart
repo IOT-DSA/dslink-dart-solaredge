@@ -23,6 +23,8 @@ class Site {
 
   int get calls => _numCalls;
   int _numCalls = 0;
+  int callStart = 5; // default to 5am
+  int callEnd = 21; // default to 9pm.
 
   int accountId;
   String name;
