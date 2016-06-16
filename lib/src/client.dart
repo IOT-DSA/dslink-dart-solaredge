@@ -325,7 +325,7 @@ class SeClient {
 
     Map map;
     try {
-      logger.warning('Connecting to: $uri');
+      logger.finest('Connecting to: $uri');
       var resp = await _client.get(uri, headers: _headers);
       logger.finest('Response: ${resp.statusCode}');
       logger.finest('Response: ${resp.body}');

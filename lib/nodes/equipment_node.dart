@@ -125,7 +125,6 @@ class EquipmentNode extends SeBase {
 
   void childSubscribe() {
     _subs += 1;
-    print('Subscription');
     if ((_refreshTimer == null || !_refreshTimer.isActive) && _subs == 1) {
       _refreshData(null);
     }
@@ -139,7 +138,6 @@ class EquipmentNode extends SeBase {
   }
 
   _refreshData(Timer t) async {
-    print('Refresh data');
     if (t == null && (_refreshTimer == null || !_refreshTimer.isActive)) {
       _refreshTimer = new Timer.periodic(_refreshPeriod, _refreshData);
     }
