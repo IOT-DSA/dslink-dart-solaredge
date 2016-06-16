@@ -6,8 +6,8 @@ import '../models.dart';
 
 class EquipmentNode extends SeBase {
   static const String isType = 'equipmentNode';
-
   static const String _isInverter = r'$$se_isinv';
+  static const Duration _refreshPeriod = const Duration(minutes: 15);
 
   static Map<String, dynamic> definition(Equipment equipment) {
     var isInv = (equipment.manufacturer != "" && equipment.model != "");
@@ -42,6 +42,9 @@ class EquipmentNode extends SeBase {
 
   String serial;
   bool isInverter;
+  int _subs = 0;
+  DateTime _lastUp;
+  Timer _refreshTimer;
 
   SeClient client;
   EquipmentNode(String path, this.client) : super(path);
@@ -54,58 +57,103 @@ class EquipmentNode extends SeBase {
     var dataNd = provider.getNode('$path/data');
     if (dataNd == null || dataNd.children.length > 1) return;
 
+    _lastUp = new DateTime.now();
     getSite()
         .then((site) => client.lastInverterData(site, serial))
-        .then((data) {
-      if (data == null) return;
-
-      var dp = dataNd.path;
-      provider.addNode('$dp/totPower',
-          InverterValue.definition('Total Active Power', data.totalPower));
-      provider.addNode('$dp/dcVolt',
-          InverterValue.definition('DC Voltage', data.dcVoltage));
-      provider.addNode('$dp/groundRes',
-          InverterValue.definition('Ground Fault Resistance',
-              data.groundResistance));
-      provider.addNode('$dp/powLimit',
-          InverterValue.definition('Power Limit', data.powerLimit));
-      provider.addNode('$dp/totEng',
-          InverterValue.definition('Total Energy', data.totalEnergy));
-      provider.addNode('$dp/temp',
-          InverterValue.definition('Temperature', data.temperature));
-      provider.addNode('$dp/vl1to2',
-          InverterValue.definition('VL1To2', data.vL1to2));
-      provider.addNode('$dp/vl2to3',
-          InverterValue.definition('VL2To3', data.vL2to3));
-      provider.addNode('$dp/vl3to1',
-          InverterValue.definition('VL3To1', data.vL3to1));
-      provider.addNode('$dp/mode', {
-          r'$name': 'Inverter Mode',
-          r'$type': 'string',
-          r'?value': data.mode
-      });
-
-      if (data.phases == null || data.phases.isEmpty) return;
-      for (var ph in data.phases) {
-        var nd = provider.getOrCreateNode('$dp/${ph.name}');
-        var pp = nd.path;
-        provider.addNode('$pp/acCur',
-            InverterValue.definition('AC Current', ph.acCurrent));
-        provider.addNode('$pp/acVolt',
-            InverterValue.definition('AC Voltage', ph.acVoltage));
-        provider.addNode('$pp/acFreq',
-            InverterValue.definition('AC Frequency', ph.acFrequency));
-        provider.addNode('$pp/appPow',
-            InverterValue.definition('Apparent Power', ph.apparentPower));
-        provider.addNode('$pp/actPow',
-            InverterValue.definition('Active Power', ph.activePower));
-        provider.addNode('$pp/reaPow',
-            InverterValue.definition('Reactive Power', ph.reactivePower));
-        provider.addNode('$pp/cosPhi',
-            InverterValue.definition('Cos Phi', ph.cosPhi));
-      }
-    });
+        .then(updateInvData);
   }
+
+  void updateInvData(InverterData data) {
+    void addOrUpdate(String path, Map mp) {
+      var nd = provider.getNode(path);
+      if (nd != null) {
+        nd.updateValue(mp['?value']);
+      } else {
+        provider.addNode(path, mp);
+      }
+    }
+
+    if (data == null) return;
+
+    var dataNd = provider.getNode('$path/data');
+    var dp = dataNd.path;
+    addOrUpdate('$dp/totPower',
+        InverterValue.definition('Total Active Power', data.totalPower));
+    addOrUpdate('$dp/dcVolt',
+        InverterValue.definition('DC Voltage', data.dcVoltage));
+    addOrUpdate('$dp/groundRes',
+        InverterValue.definition('Ground Fault Resistance',
+            data.groundResistance));
+    addOrUpdate('$dp/powLimit',
+        InverterValue.definition('Power Limit', data.powerLimit));
+    addOrUpdate('$dp/totEng',
+        InverterValue.definition('Total Energy', data.totalEnergy));
+    addOrUpdate('$dp/temp',
+        InverterValue.definition('Temperature', data.temperature));
+    addOrUpdate('$dp/vl1to2',
+        InverterValue.definition('VL1To2', data.vL1to2));
+    addOrUpdate('$dp/vl2to3',
+        InverterValue.definition('VL2To3', data.vL2to3));
+    addOrUpdate('$dp/vl3to1',
+        InverterValue.definition('VL3To1', data.vL3to1));
+    addOrUpdate('$dp/mode', {
+      r'$name': 'Inverter Mode',
+      r'$type': 'string',
+      r'?value': data.mode
+    });
+
+    if (data.phases == null || data.phases.isEmpty) return;
+    for (var ph in data.phases) {
+      var nd = provider.getOrCreateNode('$dp/${ph.name}');
+      var pp = nd.path;
+      addOrUpdate('$pp/acCur',
+          InverterValue.definition('AC Current', ph.acCurrent));
+      addOrUpdate('$pp/acVolt',
+          InverterValue.definition('AC Voltage', ph.acVoltage));
+      addOrUpdate('$pp/acFreq',
+          InverterValue.definition('AC Frequency', ph.acFrequency));
+      addOrUpdate('$pp/appPow',
+          InverterValue.definition('Apparent Power', ph.apparentPower));
+      addOrUpdate('$pp/actPow',
+          InverterValue.definition('Active Power', ph.activePower));
+      addOrUpdate('$pp/reaPow',
+          InverterValue.definition('Reactive Power', ph.reactivePower));
+      addOrUpdate('$pp/cosPhi',
+          InverterValue.definition('Cos Phi', ph.cosPhi));
+    }
+  }
+
+  void childSubscribe() {
+    _subs += 1;
+    print('Subscription');
+    if ((_refreshTimer == null || !_refreshTimer.isActive) && _subs == 1) {
+      _refreshData(null);
+    }
+  }
+
+  void childUnsubscribe() {
+    _subs -= 1;
+    if (_subs <= 0 && _refreshTimer != null && _refreshTimer.isActive) {
+      _refreshTimer.cancel();
+    }
+  }
+
+  _refreshData(Timer t) async {
+    print('Refresh data');
+    if (t == null && (_refreshTimer == null || !_refreshTimer.isActive)) {
+      _refreshTimer = new Timer.periodic(_refreshPeriod, _refreshData);
+    }
+
+    var site = await getSite();
+    var curTime = new DateTime.now();
+
+    if (curTime.hour < site.callStart || curTime.hour >= site.callEnd) return;
+    if (_lastUp != null && curTime.difference(_lastUp) < _refreshPeriod) return;
+
+    _lastUp = curTime;
+    client.lastInverterData(site, serial).then(updateInvData);
+  }
+
 }
 
 class InverterValue extends SeBase {
@@ -118,6 +166,28 @@ class InverterValue extends SeBase {
   };
 
   InverterValue(String path) : super(path);
+
+  EquipmentNode _inv;
+  EquipmentNode get inverter {
+     if (_inv == null) {
+       var p = parent;
+       while (p != null && p is! EquipmentNode) {
+         p = p.parent;
+       }
+       _inv = p;
+     }
+    return _inv;
+  }
+
+  @override
+  void onSubscribe() {
+    inverter.childSubscribe();
+  }
+
+  @override
+  void onUnsubscribe() {
+    inverter.childUnsubscribe();
+  }
 }
 
 class LoadEquipment extends SeCommand {

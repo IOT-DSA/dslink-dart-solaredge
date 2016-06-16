@@ -15,6 +15,7 @@ main(List<String> args) async {
       LoadEquipment.isType: (String path) => new LoadEquipment(path, client),
       EquipmentNode.isType: (String path) => new EquipmentNode(path, client),
       GetInverterData.isType: (String path) => new GetInverterData(path, client),
+      InverterValue.isType: (String path) => new InverterValue(path),
       LoadProductionDates.isType: (String path) =>
           new LoadProductionDates(path, client),
       GetEnergyMeasurements.isType: (String path) =>
