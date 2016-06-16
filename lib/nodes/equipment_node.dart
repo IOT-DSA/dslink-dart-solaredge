@@ -6,28 +6,42 @@ import '../models.dart';
 
 class EquipmentNode extends SeBase {
   static const String isType = 'equipmentNode';
-  static Map<String, dynamic> definition(Equipment equipment) => {
-    r'$is': isType,
-    r'$name': equipment.name,
-    'model' : {
-      r'$name' : 'Model',
-      r'$type' : 'string',
-      r'?value' : equipment.model,
-    },
-    'manufacturer' : {
-      r'$name' : 'Manufacturer',
-      r'$type' : 'string',
-      r'?value' : equipment.manufacturer,
-    },
-    'serial' : {
-      r'$name' : 'Serial Number',
-      r'$type' : 'string',
-      r'?value' : equipment.serial,
-    },
-    GetInverterData.pathName: GetInverterData.definition()
-  };
+
+  static const String _isInverter = r'$$se_isinv';
+
+  static Map<String, dynamic> definition(Equipment equipment) {
+    var isInv = (equipment.manufacturer != "" && equipment.model != "");
+    var ret = {
+      _isInverter: isInv,
+      r'$is': isType,
+      r'$name': equipment.name,
+      'model' : {
+        r'$name' : 'Model',
+        r'$type' : 'string',
+        r'?value' : equipment.model,
+      },
+      'manufacturer' : {
+        r'$name' : 'Manufacturer',
+        r'$type' : 'string',
+        r'?value' : equipment.manufacturer,
+      },
+      'serial' : {
+        r'$name' : 'Serial Number',
+        r'$type' : 'string',
+        r'?value' : equipment.serial,
+      },
+    };
+
+    if (isInv) {
+      ret[GetInverterData.pathName] = GetInverterData.definition();
+      ret['data'] = {};
+    }
+
+    return ret;
+  }
 
   String serial;
+  bool isInverter;
 
   SeClient client;
   EquipmentNode(String path, this.client) : super(path);
@@ -35,7 +49,75 @@ class EquipmentNode extends SeBase {
   @override
   void onCreated() {
     serial = provider.getNode('$path/serial').value;
+    isInverter = getConfig(_isInverter) as bool;
+
+    var dataNd = provider.getNode('$path/data');
+    if (dataNd == null || dataNd.children.length > 1) return;
+
+    getSite()
+        .then((site) => client.lastInverterData(site, serial))
+        .then((data) {
+      if (data == null) return;
+
+      var dp = dataNd.path;
+      provider.addNode('$dp/totPower',
+          InverterValue.definition('Total Active Power', data.totalPower));
+      provider.addNode('$dp/dcVolt',
+          InverterValue.definition('DC Voltage', data.dcVoltage));
+      provider.addNode('$dp/groundRes',
+          InverterValue.definition('Ground Fault Resistance',
+              data.groundResistance));
+      provider.addNode('$dp/powLimit',
+          InverterValue.definition('Power Limit', data.powerLimit));
+      provider.addNode('$dp/totEng',
+          InverterValue.definition('Total Energy', data.totalEnergy));
+      provider.addNode('$dp/temp',
+          InverterValue.definition('Temperature', data.temperature));
+      provider.addNode('$dp/vl1to2',
+          InverterValue.definition('VL1To2', data.vL1to2));
+      provider.addNode('$dp/vl2to3',
+          InverterValue.definition('VL2To3', data.vL2to3));
+      provider.addNode('$dp/vl3to1',
+          InverterValue.definition('VL3To1', data.vL3to1));
+      provider.addNode('$dp/mode', {
+          r'$name': 'Inverter Mode',
+          r'$type': 'string',
+          r'?value': data.mode
+      });
+
+      if (data.phases == null || data.phases.isEmpty) return;
+      for (var ph in data.phases) {
+        var nd = provider.getOrCreateNode('$dp/${ph.name}');
+        var pp = nd.path;
+        provider.addNode('$pp/acCur',
+            InverterValue.definition('AC Current', ph.acCurrent));
+        provider.addNode('$pp/acVolt',
+            InverterValue.definition('AC Voltage', ph.acVoltage));
+        provider.addNode('$pp/acFreq',
+            InverterValue.definition('AC Frequency', ph.acFrequency));
+        provider.addNode('$pp/appPow',
+            InverterValue.definition('Apparent Power', ph.apparentPower));
+        provider.addNode('$pp/actPow',
+            InverterValue.definition('Active Power', ph.activePower));
+        provider.addNode('$pp/reaPow',
+            InverterValue.definition('Reactive Power', ph.reactivePower));
+        provider.addNode('$pp/cosPhi',
+            InverterValue.definition('Cos Phi', ph.cosPhi));
+      }
+    });
   }
+}
+
+class InverterValue extends SeBase {
+  static const String isType = 'inverterValueNode';
+  static Map<String, dynamic> definition(String name, num value) => {
+      r'$is': isType,
+      r'$name': name,
+      r'$type': 'number',
+      r'?value': value
+  };
+
+  InverterValue(String path) : super(path);
 }
 
 class LoadEquipment extends SeCommand {
@@ -99,7 +181,7 @@ class GetInverterData extends SeCommand {
   static const String _dcVolt = 'dcVoltage';
   static const String _resistance = 'groundResistance';
   static const String _limit = 'powerLimit';
-  static const String _lifetime = 'lifeTimeEnergy';
+  static const String _totalEnergy = 'totalEnergy';
   static const String _phases = 'phases';
   static const Duration _weekPeriod = const Duration(days: 7);
   
@@ -117,7 +199,7 @@ class GetInverterData extends SeCommand {
       { 'name': _dcVolt, 'type': 'number', 'default': 0 },
       { 'name': _resistance, 'type': 'number', 'default': 0 },
       { 'name': _limit, 'type': 'number', 'default': 0 },
-      { 'name': _lifetime, 'type': 'number', 'default': 0 },
+      { 'name': _totalEnergy, 'type': 'number', 'default': 0 },
       { 'name': _phases, 'type': 'array', 'default': [] }
     ]
   };
@@ -162,12 +244,12 @@ class GetInverterData extends SeCommand {
 
     for (var tel in result) {
       var mp = {};
-      mp[_date] = tel.date;
+      mp[_date] = tel.dateStr;
       mp[_totPower] = tel.totalPower;
       mp[_dcVolt] = tel.dcVoltage;
       mp[_resistance] = tel.groundResistance;
       mp[_limit] = tel.powerLimit;
-      mp[_lifetime] = tel.lifeTimeEnergy;
+      mp[_totalEnergy] = tel.totalEnergy;
       mp[_phases] = tel.phases.map((pd) => pd.toMap()).toList();
       ret.add(mp);
     }

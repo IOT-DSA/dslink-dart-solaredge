@@ -13,20 +13,32 @@ class Equipment {
 }
 
 class InverterData {
-  String date;
+  String dateStr;
+  DateTime date;
   num totalPower;
+  num totalEnergy;
   num dcVoltage;
   num groundResistance;
   num powerLimit;
-  num lifeTimeEnergy;
+  num temperature;
+  num vL1to2;
+  num vL2to3;
+  num vL3to1;
+  String mode;
   List<PhaseData> phases;
   InverterData.fromJson(Map map) {
-    date = map['date'];
+    dateStr = map['date'];
+    date = DateTime.parse(dateStr);
     totalPower = map['totalActivePower'];
+    totalEnergy = map['totalEnergy'];
     dcVoltage = map['dcVoltage'];
-    groundResistance = map['groundResistance'];
+    groundResistance = map['groundFaultResistance'];
     powerLimit = map['powerLimit'];
-    lifeTimeEnergy = map['lifeTimeEnergy'];
+    temperature = map['temperature'];
+    mode = map['inverterMode'];
+    vL1to2 = map['vL1To2'];
+    vL2to3 = map['vL2To3'];
+    vL3to1 = map['vL3To1'];
 
     var pd = map.keys.where((key) { return map[key] is Map; });
     if (pd.isNotEmpty) {

@@ -244,6 +244,26 @@ class SeClient {
     return list;
   }
 
+  // Retrieve the most recent [InverterData] associated with the equipment
+  // at the specified [Site]. May include [PhaseData].
+  Future<InverterData> lastInverterData(Site site, String serial) async {
+    if (site == null || serial == null || serial.isEmpty) return null;
+
+    var endDate = new DateTime.now();
+    var startDate = new DateTime(endDate.year, endDate.month, endDate.day);
+    var endStr = endDate.toString();
+    var startStr = startDate.toString();
+    var qParams = {
+      'startTime': startStr.substring(0, startStr.length - 4),
+      'endTime': endStr.substring(0, endStr.length - 7)
+    };
+
+    var list = await getInverterData(site, serial, qParams);
+    if (list == null || list.isEmpty) return null;
+    list.sort((a, b) => a.date.compareTo(b.date));
+    return list.last;
+  }
+
   /// Retrieve a list of [SensorConnections] for the specified [Site]. Each
   /// connection contains a list of [Sensor]s.
   Future<List<SensorConnections>> loadSensors(Site site) async {

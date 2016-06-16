@@ -130,7 +130,7 @@ class SiteNode extends SimpleNode {
     },
     'equipment': {
       r'$name': 'Equipment',
-       LoadEquipment.pathName : LoadEquipment.definition(),
+//       LoadEquipment.pathName : LoadEquipment.definition(),
       'count' : {
         r'$name' : 'Count',
         r'$type' : 'number',
@@ -175,7 +175,10 @@ class SiteNode extends SimpleNode {
     RemoveSiteNode.pathName: RemoveSiteNode.definition()
   };
 
-  Future<Site> getSite() => _siteComp.future;
+  Future<Site> getSite() async {
+    if (_site != null) return _site;
+    return _siteComp.future;
+  }
   Completer<Site> _siteComp;
   Site _site;
   SeClient client;
@@ -188,7 +191,7 @@ class SiteNode extends SimpleNode {
   void onCreated() {
     var api = getConfig(r'$$se_api');
     var id = getConfig(r'$$se_id');
-    client.addSite(id, api).then((Site site) {
+    client.addSite(id, api).then((Site site) async {
       var nd = provider.getNode('$path/apiCalls/startTime');
       if (nd != null) {
         site.callStart = nd.value.toInt();
@@ -200,6 +203,27 @@ class SiteNode extends SimpleNode {
 
       _site = site;
       _siteComp.complete(_site);
+
+      var eqNode = provider.getNode('$path/equipment');
+      print(eqNode.children.keys);
+      if (eqNode.children.keys.length > 2) {
+        return;
+      }
+
+      // Only 'count'
+      var eq = await client.loadEquipment(_site);
+      updateCalls();
+      if (eq == null) return;
+
+      var cnNode = provider.getNode('${eqNode.path}/count');
+      if (cnNode != null) {
+        cnNode.updateValue(eq.length);
+      }
+
+      for (var i = 0; i < eq.length; i++) {
+        provider.addNode('${eqNode.path}/equip_$i',
+            EquipmentNode.definition(eq[i]));
+      }
     });
 
   }
