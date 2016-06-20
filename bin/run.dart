@@ -1,9 +1,15 @@
+//import 'dart:io' show Directory;
+
 import 'package:dslink/dslink.dart';
 
 import 'package:dslink_solaredge/src/client.dart';
 import 'package:dslink_solaredge/nodes.dart';
+//import 'package:dslink_solaredge/models.dart' show Config;
+//import 'package:path/path.dart' as path;
+
 
 main(List<String> args) async {
+//  Directory curDir;
   LinkProvider link;
   SeClient client = new SeClient();
 
@@ -37,6 +43,16 @@ main(List<String> args) async {
     defaultNodes: {
       'Sites' : { AddSiteNode.pathName: AddSiteNode.definition() }
   });
+
+//  link.configure(optionsHandler: (opts) {
+//    if (opts != null && opts["base-path"] != null) {
+//      curDir = new Directory(opts["base-path"]);
+//    } else {
+//      curDir = Directory.current;
+//    }
+//  });
+//
+//  Config.dataDir = path.join(curDir.path, "data", '2015b.tzf');
 
   link.init();
   await link.connect();
