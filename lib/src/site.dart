@@ -101,7 +101,3 @@ class Location {
     timeZone = map[_timeZone];
   }
 }
-
-abstract class Config {
-  static String dataDir = '';
-}
