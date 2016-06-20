@@ -3,6 +3,8 @@ description: Solar Edge DSLink
 environment:
   sdk: ">=1.13.0 <2.0.0"
 dependencies:
+  timezone: ^0.4.3
+  path: ^1.3.9
   dslink:
     git: https://github.com/IOT-DSA/sdk-dslink-dart.git
   http: ^0.11.3+3

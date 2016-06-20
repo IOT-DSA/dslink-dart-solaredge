@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:timezone/standalone.dart';
+
 import 'se_base.dart';
 import '../src/client.dart';
 import '../models.dart';
@@ -57,10 +59,14 @@ class EquipmentNode extends SeBase {
     var dataNd = provider.getNode('$path/data');
     if (dataNd == null || dataNd.children.length > 1) return;
 
-    _lastUp = new DateTime.now();
-    getSite()
-        .then((site) => client.lastInverterData(site, serial))
-        .then(updateInvData);
+    initializeTimeZone(Config.dataDir)
+        .then((_) => getSite())
+        .then((site) {
+      var loc = getLocation(site.location.timeZone);
+      _lastUp = new TZDateTime.now(loc);
+
+      return client.lastInverterData(site, serial);
+    }).then(updateInvData);
   }
 
   void updateInvData(InverterData data) {
