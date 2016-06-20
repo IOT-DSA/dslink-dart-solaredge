@@ -59,7 +59,7 @@ class EquipmentNode extends SeBase {
     var dataNd = provider.getNode('$path/data');
     if (dataNd == null || dataNd.children.length > 1) return;
 
-    initializeTimeZone()
+    initializeTimeZone(Config.dataDir)
         .then((_) => getSite())
         .then((site) {
       var loc = getLocation(site.location.timeZone);

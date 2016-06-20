@@ -72,7 +72,7 @@ class OverviewNode extends SeBase {
     site ??= await getSite();
 
     if (!_tzInit) {
-      await initializeTimeZone();
+      await initializeTimeZone(Config.dataDir);
       _tzInit = true;
     }
 
