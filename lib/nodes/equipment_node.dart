@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:timezone/standalone.dart';
-
 import 'se_base.dart';
 import '../src/client.dart';
 import '../models.dart';
@@ -45,7 +43,7 @@ class EquipmentNode extends SeBase {
   String serial;
   bool isInverter;
   int _subs = 0;
-  TZDateTime _lastUp;
+  DateTime _lastUp;
   Timer _refreshTimer;
 
   SeClient client;
@@ -59,14 +57,10 @@ class EquipmentNode extends SeBase {
     var dataNd = provider.getNode('$path/data');
     if (dataNd == null || dataNd.children.length > 1) return;
 
-    initializeTimeZone()
-        .then((_) => getSite())
-        .then((site) {
-      var loc = getLocation(site.location.timeZone);
-      _lastUp = new TZDateTime.now(loc);
-
-      return client.lastInverterData(site, serial);
-    }).then(updateInvData);
+    _lastUp = new DateTime.now();
+    getSite()
+        .then((site) => client.lastInverterData(site, serial))
+        .then(updateInvData);
   }
 
   void updateInvData(InverterData data) {
@@ -149,8 +143,7 @@ class EquipmentNode extends SeBase {
     }
 
     var site = await getSite();
-    var loc = getLocation(site.location.timeZone);
-    var curTime = new TZDateTime.now(loc);
+    var curTime = new DateTime.now();
 
     if (curTime.hour < site.callStart || curTime.hour >= site.callEnd) return;
     if (_lastUp != null && curTime.difference(_lastUp) < _refreshPeriod) return;
