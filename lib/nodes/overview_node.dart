@@ -66,7 +66,9 @@ class OverviewNode extends SeBase {
     }
 
     if (_timer == null || !_timer.isActive) {
-      _timer = new Timer.periodic(_minInterval, _timerUpdate);
+      // Add an extra 2 seconds to help account for slightly imprecise timing
+      var interval = new Duration(minutes: _minInterval.inMinutes, seconds: 2);
+      _timer = new Timer.periodic(interval, _timerUpdate);
     }
 
     site ??= await getSite();

@@ -149,7 +149,10 @@ class EquipmentNode extends SeBase {
 
   _refreshData(Timer t) async {
     if (t == null && (_refreshTimer == null || !_refreshTimer.isActive)) {
-      _refreshTimer = new Timer.periodic(_refreshPeriod, _refreshData);
+      // Increase timer interval by 2 seconds to help account for slightly
+      // imprecise precision.
+      var interval = new Duration(minutes: _refreshPeriod.inMinutes, seconds: 2);
+      _refreshTimer = new Timer.periodic(interval, _refreshData);
     }
 
     var site = await getSite();
