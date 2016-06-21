@@ -102,6 +102,6 @@ class Location {
   }
 }
 
-//abstract class Config {
-//  static String dataDir = '';
-//}
+abstract class Config {
+  static String dataDir = '';
+}

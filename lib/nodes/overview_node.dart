@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:dslink/dslink.dart';
-//import 'package:timezone/standalone.dart';
+import 'package:timezone/standalone.dart';
 
 import 'se_base.dart';
 import '../models.dart';
@@ -35,7 +35,7 @@ class OverviewNode extends SeBase {
   Timer _timer;
   Site site;
   DateTime _lastUpdate;
-//  bool _tzInit = false;
+  bool _tzInit = false;
 
   final LinkProvider link;
 
@@ -71,14 +71,14 @@ class OverviewNode extends SeBase {
 
     site ??= await getSite();
 
-//    if (!_tzInit) {
-//      await initializeTimeZone(Config.dataDir);
-//      _tzInit = true;
-//    }
+    if (!_tzInit) {
+      await initializeTimeZone(Config.dataDir);
+      _tzInit = true;
+    }
 
-//    var siteTz = getLocation(site.location.timeZone);
-//    var curTime = new TZDateTime.now(siteTz);
-    var curTime = new DateTime.now();
+    var siteTz = getLocation(site.location.timeZone);
+    var curTime = new TZDateTime.now(siteTz);
+//    var curTime = new DateTime.now();
     if (_lastUpdate != null && curTime.difference(_lastUpdate) < _minInterval) {
       return;
     }
