@@ -45,7 +45,7 @@ class EquipmentNode extends SeBase {
   String serial;
   bool isInverter;
   int _subs = 0;
-  DateTime _lastUp;
+  TZDateTime _lastUp;
   Timer _refreshTimer;
 
   SeClient client;
@@ -156,7 +156,8 @@ class EquipmentNode extends SeBase {
     }
 
     var site = await getSite();
-    var curTime = new DateTime.now();
+    var loc = getLocation(site.location.timeZone);
+    var curTime = new TZDateTime.now(loc);
 
     if (curTime.hour < site.callStart || curTime.hour >= site.callEnd) return;
     if (_lastUp != null && curTime.difference(_lastUp) < _refreshPeriod) return;

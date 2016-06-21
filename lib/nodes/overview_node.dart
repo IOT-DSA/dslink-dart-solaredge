@@ -80,12 +80,9 @@ class OverviewNode extends SeBase {
 
     var siteTz = getLocation(site.location.timeZone);
     var curTime = new TZDateTime.now(siteTz);
-//    var curTime = new DateTime.now();
     if (_lastUpdate != null && curTime.difference(_lastUpdate) < _minInterval) {
       return;
     }
-
-    site ??= await getSite();
 
     if (curTime.hour < site.callStart || curTime.hour >= site.callEnd) {
       return;
