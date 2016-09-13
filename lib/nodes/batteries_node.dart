@@ -3,6 +3,29 @@ import 'dart:async';
 import 'se_base.dart';
 import '../src/client.dart';
 
+//* @Action Get_Storage_Data
+//* @Is getStorageData
+//* @Parent SiteNode
+//*
+//* Get detailed storage information from batteries.
+//*
+//* Get Storage Data will retrieve the current state of the batteries connected
+//* to the site over the specified time range. It will verify the date range
+//* is valid. If the request fails, it returns an empty list.
+//*
+//* @Param dateRange string Date range for the period of time to retrieve the
+//* battery usage. Should be in the format MM-DD-YYYY HH:mm:SS/MM-DD-YYYY HH:mm:SS
+//*
+//* @Return table
+//* @Column namePlate number The nameplate capacity of the battery.
+//* @Column serialNumber string Serial number of the battery.
+//* @Column timeStamp string Timestamp of the data.
+//* @Column power number Positive number indicates the battery is charging.
+//* negative number indicates the battery is discharging.
+//* @Column lifeTimeEnergyCharged number The lifetime energy charged into the
+//* battery in Wh.
+//* @Column batteryState string String representation of the Battery state. May
+//* be one of: Invalid, Standby, Thermal Management, Enabled, Fault
 class GetStorageData extends SeCommand {
   static const String isType = 'getStorageData';
   static const String pathName = 'Get_Storage_Data';

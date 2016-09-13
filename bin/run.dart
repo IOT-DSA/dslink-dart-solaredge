@@ -41,6 +41,10 @@ main(List<String> args) async {
       GetSensorData.isType: (String path) => new GetSensorData(path, client)
     },
     defaultNodes: {
+      //* @Node Sites
+      //* @Parent root
+      //*
+      //* Collection of Solar Edge Sites.
       'Sites' : { AddSiteNode.pathName: AddSiteNode.definition() }
   });
 

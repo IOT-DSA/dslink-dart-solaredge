@@ -3,6 +3,29 @@ import 'dart:async';
 import 'se_base.dart';
 import '../src/client.dart';
 
+//* @Action Get_Energy_Measurements
+//* @Is getEnergyMeasurements
+//* @Parent SiteNode
+//*
+//* Get Energy Measurements retrieves the sites energy measurements.
+//*
+//* Get Energy Measurements will return measurements for a given time range over
+//* a specified time period. Action returns a list of measurements at the
+//* date time with the value and measurement unit. It will verify the time range
+//* is valid and the time period is permitted with the specified time range.
+//* *When using time period of 1 day, the time range is limited to one year.*
+//* *When using a time period of Quarter_Of_An_Hour or Hour, time range is limited
+//* to one 1 month.*
+//*
+//* @Param dateRange string Date range for the period of time to retrieve the
+//* energy measurements. Should be in the format MM-DD-YYYY HH:mm:SS/MM-DD-YYYY HH:mm:SS
+//* @Param timeUnit enum[Quarter_Of_An_Hour,Hour,Day,Week,Month,Year] Time unit is
+//* interval period from which measurements over the dateRange should be provided.
+//*
+//* @Return table
+//* @Column date string Date Time of the measurement.
+//* @Column value number Value of the measurement.
+//* @Column energyUnity string Unit of the measurement value.
 class GetEnergyMeasurements extends SeCommand {
   static const String isType = 'getEnergyMeasurements';
   static const String pathName = 'Get_Energy_Measurements';
@@ -28,7 +51,7 @@ class GetEnergyMeasurements extends SeCommand {
     ],
     r'$result': 'table',
     r'$columns' : [
-      { 'name' : _date, 'type' : 'bool', 'default' : false},
+      { 'name' : _date, 'type' : 'string', 'default' : '00-00-0000 00:00:00'},
       { 'name' : _value, 'type' : 'number', 'default': 0},
       { 'name' : _energyUnit, 'type': 'string', 'default': ''}
     ]
@@ -96,6 +119,22 @@ class GetEnergyMeasurements extends SeCommand {
   }
 }
 
+//* @Action Get_Total_Energy
+//* @Is getTotalEnergy
+//* @Parent SiteNode
+//*
+//* Gets total energy produced over specified time period.
+//*
+//* Get Total Energy retrieves the total energy produced over the specified
+//* time period. It will validate that the time range is valid and return
+//* 0 values if not valid.
+//*
+//* @Param dateRange string Date range for the period of time to retrieve the
+//* energy produced. Should be in the format MM-DD-YYYY HH:mm:SS/MM-DD-YYYY HH:mm:SS
+//*
+//* @Return values
+//* @Column value number Value is the total energy produced.
+//* @Column energyUnit string Energy unit of the energy produced value.
 class GetTotalEnergy extends SeCommand {
   static const String isType = 'getTotalEnergy';
   static const String pathName = 'Get_Total_Energy';
@@ -159,6 +198,24 @@ class GetTotalEnergy extends SeCommand {
   }
 }
 
+//* @Action Get_Power_Measurements
+//* @Is getSitePower
+//* @Parent SiteNode
+//*
+//* Get power measurements in 15 minute resolution.
+//*
+//* Get Power Measurements returns the site's power measurements for the
+//* specified date range in 15 minute intervals. This action is limited to
+//* a date range of 1 month. It will verify the specified date range and return
+//* an empty list on failure.
+//*
+//* @Param dateRange string Date range for the period of time to retrieve the
+//* power measurements. Should be in the format MM-DD-YYYY HH:mm:SS/MM-DD-YYYY HH:mm:SS
+//*
+//* @Return table
+//* @Column date string Date time of the power measurement.
+//* @Column value number Value of the power measurement.
+//* @Column energyUnit Energy Unit of the power measurement value.
 class GetSitePower extends SeCommand {
   static const String isType = 'getSitePower';
   static const String pathName = 'Get_Power_Measurements';
@@ -179,7 +236,7 @@ class GetSitePower extends SeCommand {
     ],
     r'$result': 'table',
     r'$columns' : [
-      { 'name' : _date, 'type' : 'bool', 'default' : false},
+      { 'name' : _date, 'type' : 'string', 'default' : '00-00-0000 00:00:00'},
       { 'name' : _value, 'type' : 'number', 'default': 0},
       { 'name' : _energyUnit, 'type': 'string', 'default': ''}
     ]
@@ -236,6 +293,25 @@ class GetSitePower extends SeCommand {
   }
 }
 
+//* @Action Get_Detailed_Power
+//* @Is getDetailedPower
+//* @Parent SiteNode
+//*
+//* Get Detailed power measurements from meters.
+//*
+//* Get Detailed Power retrieves measurements for consumption, production and
+//* other power sources over the specified date range. The action is limited to
+//* a 1 month period of measurements. It will verify the date range provided.
+//* If the action fails it will return an empty list.
+//*
+//* @Param dateRange string Date range for the period of time to retrieve the
+//* power measurements. Should be in the format MM-DD-YYYY HH:mm:SS/MM-DD-YYYY HH:mm:SS
+//*
+//* @Return table
+//* @Column date string Date time of the power measurement.
+//* @Column type string Type of power measurement. (Eg. consumption, production)
+//* @Column value number Value of the power measurement.
+//* @Column energyUnit Energy Unity of the power measurement value.
 class GetDetailedPower extends SeCommand {
   static const String isType = 'getDetailedPower';
   static const String pathName = 'Get_Detailed_Power';
@@ -318,6 +394,29 @@ class GetDetailedPower extends SeCommand {
   }
 }
 
+//* @Action Get_Detailed_Energy
+//* @Is getDetailedEnergy
+//* @Parent SiteNode
+//*
+//* Get detailed energy produced over date range in specified intervals.
+//*
+//* Get Detailed Energy returns the energy usage over the specified date range
+//* at given intervals. This will provide production and consumption values
+//* at each time range over the specified period. *Limited to 1 year time range
+//* with a time unit interval of 1 day. Limited to 1 month time range when using
+//* a time unit interval of Quarter_Of_An_Hour or Hour* Lower resolutions (week,
+//* month and year) have no time range limitation.
+//*
+//* @Param dateRange string Date range for the period of time to retrieve the
+//* energy usage. Should be in the format MM-DD-YYYY HH:mm:SS/MM-DD-YYYY HH:mm:SS
+//* @Param timeUnit enum[Quarter_Of_An_Hour,Hour,Day,Week,Month,Year] Time Unit
+//* is the interval over which the energy usage should be displayed.
+//*
+//* @Return table
+//* @Column date string Date time of the measurement value.
+//* @Column type string Type of energy usage (eg. consumption, production)
+//* @Column value number Value of the energy usage.
+//* @Column energyUnit string Unit of measurement for the energy usage.
 class GetDetailedEnergy extends SeCommand {
   static const String isType = 'getDetailedEnergy';
   static const String pathName = 'Get_Detailed_Energy';
@@ -348,7 +447,7 @@ class GetDetailedEnergy extends SeCommand {
     ],
     r'$result': 'table',
     r'$columns' : [
-      { 'name' : _date, 'type' : 'bool', 'default' : false},
+      { 'name' : _date, 'type' : 'string', 'default' : '00-00-0000 00:00:00'},
       { 'name' : _type, 'type' : 'string', 'default': '' },
       { 'name' : _value, 'type' : 'number', 'default': 0},
       { 'name' : _energyUnit, 'type': 'string', 'default': ''}

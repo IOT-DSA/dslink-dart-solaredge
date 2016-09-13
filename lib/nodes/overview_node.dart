@@ -7,17 +7,122 @@ import 'se_base.dart';
 import '../models.dart';
 import '../src/client.dart';
 
+//* @Node Overview
+//* @Is overviewNode
+//* @Parent SiteNode
+//*
+//* Collection of Site overview values.
+//*
+//* Collection of site overview values. If any of the values has a subscription,
+//* then the OverviewNode will send an API request once every 15 minutes to
+//* retrieve updated values.
 class OverviewNode extends SeBase {
   static const String isType = 'overviewNode';
   static const String pathName = 'Overview';
   static Map<String, dynamic> definition() => {
         r'$is': isType,
+        //* @Node lastUpdateTime
+        //* @Is overviewValue
+        //* @Parent Overview
+        //*
+        //* Last time overview values were updated.
+        //* @Value string
         _lastUpdateTime: OverviewValue.definition(
             'Last Update Time', 'string', '0000-00-00'),
+        //* @Node currentPower
+        //* @Is overviewValue
+        //* @Parent Overview
+        //*
+        //* Current power output of the site.
+        //* @Value number
         _currentPower: OverviewValue.definition('Current Power', 'number', 0),
+        //* @Node lifeTimeData
+        //* @Is energyRevenueNode
+        //* @Parent Overview
+        //*
+        //* Collection of Site lifetime data values.
+        //
+        //* @Node energy
+        //* @Is overviewValue
+        //* @MetaType ltEnergy
+        //* @Parent lifeTimeData
+        //*
+        //* Lifetime energy generated.
+        //* @Value number
+        //
+        //* @Node revenue
+        //* @Is overviewValue
+        //* @MetaType ltRevenue
+        //* @Parent lifeTimeData
+        //*
+        //* Life time revenue generated.
+        //* @Value number
         _lifeTimeData: EngRevNode.definition(),
+        //* @Node lastYearData
+        //* @Is energyRevenueNode
+        //* @Parent Overview
+        //*
+        //* Collection of Site data values over the last year.
+        //
+        //* @Node energy
+        //* @Is overviewValue
+        //* @MetaType lyEnergy
+        //* @Parent lastYearData
+        //*
+        //* Last year energy generated.
+        //* @Value number
+        //
+        //* @Node revenue
+        //* @Is overviewValue
+        //* @MetaType lyRevenue
+        //* @Parent lastYearData
+        //*
+        //* Last Year revenue generated.
+        //* @Value number
         _lastYearData: EngRevNode.definition(),
+        //* @Node lastMonthData
+        //* @Is energyRevenueNode
+        //* @Parent Overview
+        //*
+        //* Collection of Site data values over the last month.
+        //
+        //* @Node energy
+        //* @Is overviewValue
+        //* @MetaType lmEnergy
+        //* @Parent lastMonthData
+        //*
+        //* Last Month energy generated.
+        //* @Value number
+        //
+        //* @Node revenue
+        //* @Is overviewValue
+        //* @MetaType lmRevenue
+        //* @Parent lastMonthData
+        //*
+        //* Last Month revenue generated.
+        //* @Value number
         _lastMonthData: EngRevNode.definition(),
+        //* @Node lastDayData
+        //* @Is energyRevenueNode
+        //* @Parent Overview
+        //*
+        //* Collection of Site data values over the last day.
+        //
+        //* @Node energy
+        //* @Is overviewValue
+        //* @MetaType ldEnergy
+        //* @Parent lastDayData
+        //*
+        //* Last day energy generated.
+        //* @Value number
+        //
+        //* @Node revenue
+        //* @Is overviewValue
+        //* @MetaType ldRevenue
+        //* @Parent lastDayData
+        //*
+        //* Last Day revenue generated.
+        //* @Value number
         _lastDayData: EngRevNode.definition(),
       };
 

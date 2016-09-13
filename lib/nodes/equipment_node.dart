@@ -6,6 +6,17 @@ import 'se_base.dart';
 import '../src/client.dart';
 import '../models.dart';
 
+//* @Node
+//* @MetaType EquipmentNode
+//* @Parent equipment
+//* @Is equipmentNode
+//*
+//* Collection of equipment values.
+//*
+//* Equipment values for a specific piece of equipment connected to a site. Some
+//* equipment may be an inverter which has additional data. The path will be
+//* equip_## where ## is the index number of the equipment in the list.
+//* The display name will be the specific equipment name from the remote server.
 class EquipmentNode extends SeBase {
   static const String isType = 'equipmentNode';
   static const String _isInverter = r'$$se_isinv';
@@ -17,16 +28,31 @@ class EquipmentNode extends SeBase {
       _isInverter: isInv,
       r'$is': isType,
       r'$name': equipment.name,
+      //* @Node model
+      //* @Parent EquipmentNode
+      //*
+      //* Equipment model number.
+      //* @Value string
       'model' : {
         r'$name' : 'Model',
         r'$type' : 'string',
         r'?value' : equipment.model,
       },
+      //* @Node manufacturer
+      //* @Parent EquipmentNode
+      //*
+      //* The equipment manufacturer.
+      //* @Value string
       'manufacturer' : {
         r'$name' : 'Manufacturer',
         r'$type' : 'string',
         r'?value' : equipment.manufacturer,
       },
+      //* @Node serial
+      //* @Parent EquipmentNode
+      //*
+      //* Equipment's short serial number
+      //* @Value string
       'serial' : {
         r'$name' : 'Serial Number',
         r'$type' : 'string',
@@ -36,6 +62,10 @@ class EquipmentNode extends SeBase {
 
     if (isInv) {
       ret[GetInverterData.pathName] = GetInverterData.definition();
+      //* @Node data
+      //* @Parent EquipmentNode
+      //*
+      //* Collection of data used by inverter equipment.
       ret['data'] = {};
     }
 
@@ -87,25 +117,84 @@ class EquipmentNode extends SeBase {
 
     var dataNd = provider.getNode('$path/data');
     var dp = dataNd.path;
+    //* @Node totPower
+    //* @Is inverterValueNode
+    //* @Parent data
+    //*
+    //* Total active power
+    //* @Value number
     addOrUpdate('$dp/totPower',
         InverterValue.definition('Total Active Power', data.totalPower));
+    //* @Node dcVolt
+    //* @Is inverterValueNode
+    //* @Parent data
+    //*
+    //* DC Voltage
+    //* @Value number
     addOrUpdate('$dp/dcVolt',
         InverterValue.definition('DC Voltage', data.dcVoltage));
+    //* @Node groundRes
+    //* @Is inverterValueNode
+    //* @Parent data
+    //*
+    //* Ground fault resistance
+    //* @Value number
     addOrUpdate('$dp/groundRes',
         InverterValue.definition('Ground Fault Resistance',
             data.groundResistance));
+    //* @Node powLimit
+    //* @Is inverterValueNode
+    //* @Parent data
+    //*
+    //* Power limit percentage
+    //* @Value number
     addOrUpdate('$dp/powLimit',
         InverterValue.definition('Power Limit', data.powerLimit));
+    //* @Node totEng
+    //* @Is inverterValueNode
+    //* @Parent data
+    //*
+    //* Total Lifetime energy.
+    //* @Value number
     addOrUpdate('$dp/totEng',
         InverterValue.definition('Total Energy', data.totalEnergy));
+    //* @Node temp
+    //* @Is inverterValueNode
+    //* @Parent data
+    //*
+    //* Temperature of the device.
+    //* @Value number
     addOrUpdate('$dp/temp',
         InverterValue.definition('Temperature', data.temperature));
+    //* @Node vl1to2
+    //* @Is inverterValueNode
+    //* @Parent data
+    //*
+    //* vL1 to 2
+    //* @Value number
     addOrUpdate('$dp/vl1to2',
         InverterValue.definition('VL1To2', data.vL1to2));
+    //* @Node vl2to3
+    //* @Is inverterValueNode
+    //* @Parent data
+    //*
+    //* vL2 to 3
+    //* @Value number
     addOrUpdate('$dp/vl2to3',
         InverterValue.definition('VL2To3', data.vL2to3));
+    //* @Node vl3to1
+    //* @Is inverterValueNode
+    //* @Parent data
+    //*
+    //* vL3 to 1
+    //* @Value number
     addOrUpdate('$dp/vl3to1',
         InverterValue.definition('VL3To1', data.vL3to1));
+    //* @Node mode
+    //* @Parent data
+    //*
+    //* Inverter mode
+    //* @Value string
     addOrUpdate('$dp/mode', {
       r'$name': 'Inverter Mode',
       r'$type': 'string',
@@ -114,20 +203,67 @@ class EquipmentNode extends SeBase {
 
     if (data.phases == null || data.phases.isEmpty) return;
     for (var ph in data.phases) {
+      //* @Node
+      //* @MetaType dataPhase
+      //* @Parent data
+      //*
+      //* Phase data per inverter.
       var nd = provider.getOrCreateNode('$dp/${ph.name}');
       var pp = nd.path;
+      //* @Node acCur
+      //* @Parent dataPhase
+      //* @Is inverterValueNode
+      //*
+      //* AC Current
+      //* @Value number
       addOrUpdate('$pp/acCur',
           InverterValue.definition('AC Current', ph.acCurrent));
+      //* @Node acVolt
+      //* @Parent dataPhase
+      //* @Is inverterValueNode
+      //*
+      //* AC Voltage
+      //* @Value number
       addOrUpdate('$pp/acVolt',
           InverterValue.definition('AC Voltage', ph.acVoltage));
+      //* @Node acFreq
+      //* @Parent dataPhase
+      //* @Is inverterValueNode
+      //*
+      //* AC Frequency
+      //* @Value number
       addOrUpdate('$pp/acFreq',
           InverterValue.definition('AC Frequency', ph.acFrequency));
+      //* @Node appPow
+      //* @Parent dataPhase
+      //* @Is inverterValueNode
+      //*
+      //* Apparent Power
+      //* @Value number
       addOrUpdate('$pp/appPow',
           InverterValue.definition('Apparent Power', ph.apparentPower));
+      //* @Node actPower
+      //* @Parent dataPhase
+      //* @Is inverterValueNode
+      //*
+      //* Active Power
+      //* @Value number
       addOrUpdate('$pp/actPow',
           InverterValue.definition('Active Power', ph.activePower));
+      //* @Node reaPow
+      //* @Parent dataPhase
+      //* @Is inverterValueNode
+      //*
+      //* Reactive Power
+      //* @Value number
       addOrUpdate('$pp/reaPow',
           InverterValue.definition('Reactive Power', ph.reactivePower));
+      //* @Node cosPhi
+      //* @Parent dataPhase
+      //* @Is inverterValueNode
+      //*
+      //* Cos Phi
+      //* @Value number
       addOrUpdate('$pp/cosPhi',
           InverterValue.definition('Cos Phi', ph.cosPhi));
     }
@@ -202,6 +338,7 @@ class InverterValue extends SeBase {
   }
 }
 
+// Currently unused.
 class LoadEquipment extends SeCommand {
   static const String isType = 'getEquipmentNode';
   static const String pathName = 'Load_Equipment';
@@ -253,6 +390,28 @@ class LoadEquipment extends SeCommand {
   }
 }
 
+//* @Action Get_Inverter_Data
+//* @Parent EquipmentNode
+//* @Is getInverterData
+//*
+//* Retrieve inverter data for the inverter over a specified date range.
+//*
+//* Get Inverter Data returns inverter data for a date range no greater than
+//* one week. If greater than one week or the request fails then the action
+//* returns with an empty list. This action is only available on equipment
+//* which is an inverter.
+//*
+//* @Param dateRange string Date range for the period of time to retrieve the
+//* Inverter Data. Should be in the format MM-DD-YYYY HH:mm:SS/MM-DD-YYYY HH:mm:SS
+//*
+//* @Return table
+//* @Column date string Date Time the inverter data was recorder.
+//* @Column totalPower number Total active power.
+//* @Column dcVoltage number DC Voltage.
+//* @Column groundResistance number Total ground resistance.
+//* @Column powerLimit number Power limit percentage.
+//* @Column totalEnergy number Total lifetime energy.
+//* @Column phases array List of maps of phase specific data
 class GetInverterData extends SeCommand {
   static const String isType = 'getInverterData';
   static const String pathName = 'Get_Inverter_Data';

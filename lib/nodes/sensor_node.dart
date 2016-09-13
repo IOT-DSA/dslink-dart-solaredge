@@ -6,16 +6,35 @@ import 'se_base.dart';
 import '../src/client.dart';
 import '../models.dart';
 
+//* @Node SensorNode
+//* @Is sensorNode
+//* @Parent gateway
+//*
+//* Collection of data for Sensors located at the site.
+//*
+//* Sensor's are connected to gateways which only maintain the connection
+//* from the site to the sensor. Sensors will have the path and name provided
+//* by the remote Solar Edge system.
 class SensorNode extends SeBase {
   static const String isType = 'sensorNode';
   static Map<String, dynamic> definition(Sensor sensor) => {
     r'$is': isType,
     r'$name': sensor.name,
+    //* @Node measurement
+    //* @Parent SensorNode
+    //*
+    //* Measurement name that the sensor will poll for.
+    //* @Value string
     'measurement' : {
       r'$name' : 'Measurement',
       r'$type' : 'string',
       r'?value' : sensor.measurement,
     },
+    //* @Node senseType
+    //* @Parent SensorNode
+    //*
+    //* The type of measurement that measurement represents.
+    //* @Value string
     'senseType' : {
       r'$name' : 'Type',
       r'$type' : 'string',
@@ -32,6 +51,19 @@ class SensorNode extends SeBase {
   }
 }
 
+//* @Action Load_Sensors
+//* @Is loadSensorsNode
+//* @Parent sensors
+//*
+//* Retreives a list of Gateways and connected Sensors.
+//*
+//* Queries the remote Solar Edge system for a list of gateways and their
+//* connected sensors.
+//*
+//* @Return values
+//* @Column success bool Success returns true on success; false on failure.
+//* @Column message string Message returns Success! on success, and an error
+//* message on failure.
 class LoadSensors extends SeCommand {
   static const String isType = 'loadSensorsNode';
   static const String pathName = 'Load_Sensors';
@@ -67,6 +99,16 @@ class LoadSensors extends SeCommand {
       var pPath = parent.path;
       for (var conn in resp) {
         var connName = NodeNamer.createName(conn.conenctedTo);
+        //* @Node
+        //* @MetaType gateway
+        //* @Parent sensors
+        //*
+        //* Gateway is a connection point for multiple sensors.
+        //*
+        //* Gateway is specified by the remote Solar Edge system. It is a
+        //* collection of sensors which connect to it to connect in turn to
+        //* the remote Solar Edge system. Path and name are provided by the
+        //* remote Solar Edge system.
         var connNode = provider.getOrCreateNode('$pPath/$connName');
         for (var sense in conn.sensors) {
           var sName = NodeNamer.createName(sense.name);
@@ -87,6 +129,22 @@ class LoadSensors extends SeCommand {
   }
 }
 
+//* @Action Get_Sensor_Data
+//* @Parent sensors
+//* @Is getSensorData
+//* @Param dateRange string Date range in the format of MM-DD-YYYY HH:mm:SS/MM-DD-YYYY HH:mm:SS
+//*
+//* Retrieves data which has been logged by various sensors.
+//*
+//* Action will get the sensor data for all connected sensors on each gateway.
+//* It will verify that the date range is a valid date range, and return an
+//* empty list on failure. On success it returns a list of mapped data.
+//*
+//* @Return table
+//* @Column connectedTo string Connected to is the gateway the sensor is connected to.
+//* @Column date string Date is a Date time string of when the sensor data was recorded.
+//* @Column measurement string Measurement is the measurement name that the value represents.
+//* @Column value number Value is the recorded data point from the sensor.
 class GetSensorData extends SeCommand {
   static const String isType = 'getSensorData';
   static const String pathName = 'Get_Sensor_Data';
