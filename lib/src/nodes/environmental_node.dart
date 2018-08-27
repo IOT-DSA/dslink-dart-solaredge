@@ -4,6 +4,11 @@ import 'se_base.dart';
 import '../client.dart';
 import '../models/environmental_benefit.dart';
 
+
+//* @Node environmentalBenefitsNode
+//* @Parent SiteNode
+//*
+//* Collection of values related to the environmental benefits of this site.
 class EnvironmentalBenefitsNode extends SeBase {
   static const String isType = 'environmentalBenefitsNode';
   static const String pathName = 'environmental_benefits';
@@ -16,11 +21,20 @@ class EnvironmentalBenefitsNode extends SeBase {
     r'$name': 'Environmental Benefits',
     RefreshBenefitsNode.pathName: RefreshBenefitsNode.def(),
     GasEmissionSavedNode.pathName: GasEmissionSavedNode.def(eb.gasEmissions),
+    //* @Node treesPlanted
+    //* @Parent environmentalBenefitsNode
+    //*
+    //* The equivalent planting of new trees for reducing CO2 levels
     _trees: {
       r'$name': 'Trees Planted',
       r'$type': 'number',
       r'?value': eb.treesPlanted
     },
+    //* @Node lightBulbs
+    //* @Parent environmentalBenefitsNode
+    //*
+    //* The number of light bulbs that could have been powered by the site for
+    //* a day
     _lights: {
       r'$name': 'Light Bulbs',
       r'$description': 'Number of light bulbs powered for a day',
@@ -42,9 +56,18 @@ class EnvironmentalBenefitsNode extends SeBase {
   }
 }
 
+//* @Action Refresh_Benefits
+//* @Is refreshBenefitsNode
+//* @Parent environmentalBenefitsNode
+//*
+//* Refresh Environmental Benefits data.
+//*
+//* @Return values
+//* @Column success bool Success returns true on success; false on failure.
+//* @Column message string Message returns Success! on success.
 class RefreshBenefitsNode extends SeBase {
   static const String isType = 'refreshBenefitsNode';
-  static const String pathName = 'refreshBenefits';
+  static const String pathName = 'Refresh_Benefits';
 
   static const String _systemUnits = 'systemUnits';
   static const String _units = 'enum[default,Imperial,Metrics]';
@@ -92,6 +115,10 @@ class RefreshBenefitsNode extends SeBase {
 
 }
 
+//* @Node gasEmissionSavedNode
+//* @Parent environmentalBenefitsNode
+//*
+//* Collection of values related to gas emissions saved by this site.
 class GasEmissionSavedNode extends SeBase {
   static const String isType = 'gasEmissionSavedNode';
   static const String pathName = 'gas_emission_saved';
@@ -104,21 +131,37 @@ class GasEmissionSavedNode extends SeBase {
   static Map<String, dynamic> def(GasEmissions ge) => {
     r'$is': isType,
     r'$name': 'Gas Emission Saved',
+    //* @Node units
+    //* @Parent gasEmissionSavedNode
+    //*
+    //* Unit of measurements (Lbs or Kgs)
     _unit: {
       r'$name': 'Units',
       r'$type': 'string',
       r'?value': ge.units
     },
+    //* @Node co2
+    //* @Parent gasEmissionSavedNode
+    //*
+    //* Value of CO2 emissions saved
     _co2: {
       r'$name': 'CO2',
       r'$type': 'number',
       r'?value': ge.co2
     },
+    //* @Node so2
+    //* @Parent gasEmissionSavedNode
+    //*
+    //* Value of SO2 emissions saved
     _so2: {
       r'$name': 'SO2',
       r'$type': 'number',
       r'?value': ge.so2
     },
+    //* @Node nox
+    //* @Parent gasEmissionSavedNode
+    //*
+    //* Value of NOX emissions saved
     _nox: {
       r'$name': 'NOX',
       r'$type': 'number',
