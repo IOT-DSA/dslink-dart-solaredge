@@ -38,7 +38,13 @@ main(List<String> args) async {
       GetStorageData.isType: (String path) => new GetStorageData(path, client),
       LoadSensors.isType: (String path) => new LoadSensors(path, client),
       SensorNode.isType: (String path) => new SensorNode(path),
-      GetSensorData.isType: (String path) => new GetSensorData(path, client)
+      GetSensorData.isType: (String path) => new GetSensorData(path, client),
+      EnvironmentalBenefitsNode.isType: (String path) =>
+          new EnvironmentalBenefitsNode(path),
+      RefreshBenefitsNode.isType: (String path) =>
+          new RefreshBenefitsNode(path, client),
+      GasEmissionSavedNode.isType: (String path) =>
+          new GasEmissionSavedNode(path)
     },
     defaultNodes: {
       //* @Node Sites

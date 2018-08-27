@@ -8,6 +8,39 @@ import 'package:dslink/utils.dart' show logger;
 
 import '../models.dart';
 
+abstract class PathHelper {
+  static String siteDetails(int id) =>
+      'site/$id/details.json';
+  static String equipmentList(Site site) =>
+      'equipment/${site.id}/list.json';
+  static String inverterData(Site site, String serialNumber) =>
+      'equipment/${site.id}/$serialNumber/data.json';
+  static String productionDates(Site site) =>
+      'site/${site.id}/dataPeriod.json';
+  static String getEnergy(Site site) =>
+      'site/${site.id}/energy.json';
+  static String getDetailedEnergy(Site site) =>
+      'site/${site.id}/energyDetails';
+  static String getPower(Site site) =>
+      'site/${site.id}/power.json';
+  static String getDetailedPower(Site site) =>
+      'site/${site.id}/powerDetails';
+  static String getTimeFrameEnergy(Site site) =>
+      'site/${site.id}/timeFrameEnergy.json';
+  static String overview(Site site) =>
+      'site/${site.id}/overview';
+  static String getPowerFlow(Site site) =>
+      'site/${site.id}/currentPowerFlow';
+  static String getStorage(Site site) =>
+      'site/${site.id}/storageData';
+  static String sensors(Site site) =>
+      'equipment/${site.id}/sensors';
+  static String sensorData(Site site) =>
+      'site/${site.id}/sensors';
+  static String environmentalBenefit(Site site) =>
+      'site/${site.id}/envBenefits';
+}
+
 class SeClient {
   static const int maxConnections = 3;
   static final Uri rootHost = Uri.parse('https://monitoringapi.solaredge.com');
@@ -311,6 +344,26 @@ class SeClient {
     return list;
   }
 
+  /// Retreive the [EnvironmentalBenefit] for the specified site. Optionally
+  /// provide a parameter specifying systemUnits which may either be `Imperial`
+  /// or `Metrics`
+  Future<EnvironmentalBenefit> getBenefits(Site site, Map params) async {
+    if (site == null) return null;
+
+    EnvironmentalBenefit eb;
+    var resp = await _getRequest(PathHelper.environmentalBenefit(site),
+        site.api, params: params);
+    if (resp == null) return null;
+
+    site.addCall();
+    if (resp['envBenefits'] == null || (resp['envBenefits'] as Map).isEmpty) {
+      return null;
+    }
+
+    eb = new EnvironmentalBenefit.fromJson(resp['envBenefits']);
+    return eb;
+  }
+
   /// Helper to simplify GET requests. Required a [String] path which should
   /// be the path part of the URL. The string API Key, and optionally any
   /// additional parameters to pass. Returns a Map result as decoded from JSON
@@ -343,35 +396,4 @@ class SeClient {
 
     return map;
   }
-}
-
-abstract class PathHelper {
-  static String siteDetails(int id) =>
-      'site/$id/details.json';
-  static String equipmentList(Site site) =>
-      'equipment/${site.id}/list.json';
-  static String inverterData(Site site, String serialNumber) =>
-      'equipment/${site.id}/$serialNumber/data.json';
-  static String productionDates(Site site) =>
-      'site/${site.id}/dataPeriod.json';
-  static String getEnergy(Site site) =>
-      'site/${site.id}/energy.json';
-  static String getDetailedEnergy(Site site) =>
-      'site/${site.id}/energyDetails';
-  static String getPower(Site site) =>
-      'site/${site.id}/power.json';
-  static String getDetailedPower(Site site) =>
-      'site/${site.id}/powerDetails';
-  static String getTimeFrameEnergy(Site site) =>
-      'site/${site.id}/timeFrameEnergy.json';
-  static String overview(Site site) =>
-      'site/${site.id}/overview';
-  static String getPowerFlow(Site site) =>
-      'site/${site.id}/currentPowerFlow';
-  static String getStorage(Site site) =>
-      'site/${site.id}/storageData';
-  static String sensors(Site site) =>
-      'equipment/${site.id}/sensors';
-  static String sensorData(Site site) =>
-      'site/${site.id}/sensors';
 }
