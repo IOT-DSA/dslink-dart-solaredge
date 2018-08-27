@@ -12,9 +12,6 @@ packages
 *.js.deps
 *.js.map
 
-# Include when developing application packages.
-pubspec.lock
-
 # DSLink Specific Excludes
 nodes.json
 .dslink.key
