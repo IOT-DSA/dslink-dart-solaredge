@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:dslink/nodes.dart';
 
 import 'se_base.dart';
-import '../src/client.dart';
-import '../models.dart';
+import '../client.dart';
+import '../models/sensors.dart';
 
 //* @Node SensorNode
 //* @Is sensorNode

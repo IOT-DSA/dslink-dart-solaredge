@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:dslink/dslink.dart';
 
 import 'site_node.dart';
-import '../models.dart';
+import '../models/site.dart';
 
 abstract class SeBase extends SimpleNode {
   SeBase(String path) : super(path);

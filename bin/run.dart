@@ -3,7 +3,7 @@ import 'dart:io' show Directory;
 import 'package:dslink/dslink.dart';
 
 import 'package:dslink_solaredge/src/client.dart';
-import 'package:dslink_solaredge/nodes.dart';
+import 'package:dslink_solaredge/solar_edge.dart';
 import 'package:dslink_solaredge/models.dart' show Config;
 import 'package:path/path.dart' as path;
 

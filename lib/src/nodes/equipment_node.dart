@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:timezone/standalone.dart';
 
 import 'se_base.dart';
-import '../src/client.dart';
-import '../models.dart';
+import '../models/site.dart';
+import '../models/equipment.dart';
+import '../client.dart';
 
 //* @Node
 //* @MetaType EquipmentNode
