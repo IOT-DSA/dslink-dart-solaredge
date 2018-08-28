@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'se_base.dart';
-import '../src/client.dart';
+import '../client.dart';
 
 //* @Action Get_Energy_Measurements
 //* @Is getEnergyMeasurements

@@ -3,10 +3,16 @@ import 'dart:async';
 import 'package:dslink/dslink.dart';
 import 'package:dslink/nodes.dart' show NodeNamer;
 
-import '../src/client.dart';
-import '../models.dart';
-import '../nodes.dart';
 import 'se_base.dart';
+import 'batteries_node.dart';
+import 'environmental_node.dart';
+import 'equipment_node.dart';
+import 'get_energy.dart';
+import 'overview_node.dart';
+import 'sensor_node.dart';
+import '../client.dart';
+import '../models/site.dart';
+import '../models/environmental_benefit.dart';
 
 //* @Node
 //* @MetaType SiteNode
@@ -397,8 +403,9 @@ class SiteNode extends SimpleNode {
       _site = site;
       _siteComp.complete(_site);
 
+      client.getBenefits(site, null).then(updateBenefits);
+
       var eqNode = provider.getNode('$path/equipment');
-      print(eqNode.children.keys);
       if (eqNode.children.keys.length > 2) {
         return;
       }
@@ -432,6 +439,20 @@ class SiteNode extends SimpleNode {
       _site.callEnd = time;
     } else {
       _site.callStart = time;
+    }
+  }
+
+  void updateBenefits(EnvironmentalBenefit eb) {
+    updateCalls();
+    if (eb == null) return;
+
+    var ebNode = provider.getNode('$path/${EnvironmentalBenefitsNode.pathName}')
+        as EnvironmentalBenefitsNode;
+    if (ebNode == null) {
+      provider.addNode('$path/${EnvironmentalBenefitsNode.pathName}',
+        EnvironmentalBenefitsNode.def(eb));
+    } else {
+      ebNode.update(eb);
     }
   }
 }

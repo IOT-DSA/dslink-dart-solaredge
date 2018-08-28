@@ -4,8 +4,9 @@ import 'package:dslink/dslink.dart';
 import 'package:timezone/standalone.dart';
 
 import 'se_base.dart';
-import '../models.dart';
-import '../src/client.dart';
+import '../client.dart';
+import '../models/site.dart';
+import '../models/overview.dart';
 
 //* @Node Overview
 //* @Is overviewNode

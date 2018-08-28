@@ -5,12 +5,12 @@
  | |-[SiteNode](#sitenode)
  | | |-[@Remove_Site()](#remove_site)
  | | |-[@Load_Production_Dates()](#load_production_dates)
- | | |-[@Get_Energy_Measurements(dateRange, timeUnit)](#get_energy_measurements)
- | | |-[@Get_Total_Energy(dateRange)](#get_total_energy)
- | | |-[@Get_Detailed_Power(dateRange)](#get_detailed_power)
- | | |-[@Get_Power_Measurements(dateRange)](#get_power_measurements)
- | | |-[@Get_Storage_Data(dateRange)](#get_storage_data)
  | | |-[@Get_Detailed_Energy(dateRange, timeUnit)](#get_detailed_energy)
+ | | |-[@Get_Total_Energy(dateRange)](#get_total_energy)
+ | | |-[@Get_Storage_Data(dateRange)](#get_storage_data)
+ | | |-[@Get_Energy_Measurements(dateRange, timeUnit)](#get_energy_measurements)
+ | | |-[@Get_Power_Measurements(dateRange)](#get_power_measurements)
+ | | |-[@Get_Detailed_Power(dateRange)](#get_detailed_power)
  | | |-[siteName](#sitename) - string
  | | |-[siteId](#siteid) - number
  | | |-[accountId](#accountid) - number
@@ -90,6 +90,15 @@
  | | | |-[lastDayData](#lastdaydata)
  | | | | |-[energy](#energy) - number
  | | | | |-[revenue](#revenue) - number
+ | | |-[environmentalBenefitsNode](#environmentalbenefitsnode)
+ | | | |-[@Refresh_Benefits()](#refresh_benefits)
+ | | | |-[treesPlanted](#treesplanted) - number
+ | | | |-[lightBulbs](#lightbulbs) - number
+ | | | |-[gasEmissionSavedNode](#gasemissionsavednode)
+ | | | | |-[units](#units) - string
+ | | | | |-[co2](#co2) - number
+ | | | | |-[so2](#so2) - number
+ | | | | |-[nox](#nox) - number
  </pre>
 
 ---
@@ -191,32 +200,33 @@ message | `string` | Message is Success! on success, and returns an error messag
 
 ---
 
-### Get_Energy_Measurements  
+### Get_Detailed_Energy  
 
-Get Energy Measurements retrieves the sites energy measurements.  
+Get detailed energy produced over date range in specified intervals.  
 
 Type: Action   
-$is: getEnergyMeasurements   
+$is: getDetailedEnergy   
 Parent: [SiteNode](#sitenode)  
 
 Description:  
-Get Energy Measurements will return measurements for a given time range over a specified time period. Action returns a list of measurements at the date time with the value and measurement unit. It will verify the time range is valid and the time period is permitted with the specified time range. *When using time period of 1 day, the time range is limited to one year.* *When using a time period of Quarter_Of_An_Hour or Hour, time range is limited to one 1 month.*  
+Get Detailed Energy returns the energy usage over the specified date range at given intervals. This will provide production and consumption values at each time range over the specified period. *Limited to 1 year time range with a time unit interval of 1 day. Limited to 1 month time range when using a time unit interval of Quarter_Of_An_Hour or Hour* Lower resolutions (week, month and year) have no time range limitation.  
 
 Params:  
 
 Name | Type | Description
 --- | --- | ---
-dateRange | `string` | Date range for the period of time to retrieve the energy measurements. Should be in the format MM-DD-YYYY HH:mm:SS/MM-DD-YYYY HH:mm:SS
-timeUnit | `enum[Quarter_Of_An_Hour,Hour,Day,Week,Month,Year]` | Time unit is interval period from which measurements over the dateRange should be provided.
+dateRange | `string` | Date range for the period of time to retrieve the energy usage. Should be in the format MM-DD-YYYY HH:mm:SS/MM-DD-YYYY HH:mm:SS
+timeUnit | `enum[Quarter_Of_An_Hour,Hour,Day,Week,Month,Year]` | Time Unit is the interval over which the energy usage should be displayed.
 
 Return type: table   
 Columns:  
 
 Name | Type | Description
 --- | --- | ---
-date | `string` | Date Time of the measurement. 
-value | `number` | Value of the measurement. 
-energyUnity | `string` | Unit of the measurement value. 
+date | `string` | Date time of the measurement value. 
+type | `string` | Type of energy usage (eg. consumption, production) 
+value | `number` | Value of the energy usage. 
+energyUnit | `string` | Unit of measurement for the energy usage. 
 
 ---
 
@@ -244,63 +254,6 @@ Name | Type | Description
 --- | --- | ---
 value | `number` | Value is the total energy produced. 
 energyUnit | `string` | Energy unit of the energy produced value. 
-
----
-
-### Get_Detailed_Power  
-
-Get Detailed power measurements from meters.  
-
-Type: Action   
-$is: getDetailedPower   
-Parent: [SiteNode](#sitenode)  
-
-Description:  
-Get Detailed Power retrieves measurements for consumption, production and other power sources over the specified date range. The action is limited to a 1 month period of measurements. It will verify the date range provided. If the action fails it will return an empty list.  
-
-Params:  
-
-Name | Type | Description
---- | --- | ---
-dateRange | `string` | Date range for the period of time to retrieve the power measurements. Should be in the format MM-DD-YYYY HH:mm:SS/MM-DD-YYYY HH:mm:SS
-
-Return type: table   
-Columns:  
-
-Name | Type | Description
---- | --- | ---
-date | `string` | Date time of the power measurement. 
-type | `string` | Type of power measurement. (Eg. consumption, production) 
-value | `number` | Value of the power measurement. 
-energyUnit | `Energy` | Unity of the power measurement value. 
-
----
-
-### Get_Power_Measurements  
-
-Get power measurements in 15 minute resolution.  
-
-Type: Action   
-$is: getSitePower   
-Parent: [SiteNode](#sitenode)  
-
-Description:  
-Get Power Measurements returns the site's power measurements for the specified date range in 15 minute intervals. This action is limited to a date range of 1 month. It will verify the specified date range and return an empty list on failure.  
-
-Params:  
-
-Name | Type | Description
---- | --- | ---
-dateRange | `string` | Date range for the period of time to retrieve the power measurements. Should be in the format MM-DD-YYYY HH:mm:SS/MM-DD-YYYY HH:mm:SS
-
-Return type: table   
-Columns:  
-
-Name | Type | Description
---- | --- | ---
-date | `string` | Date time of the power measurement. 
-value | `number` | Value of the power measurement. 
-energyUnit | `Energy` | Unit of the power measurement value. 
 
 ---
 
@@ -335,33 +288,89 @@ batteryState | `string` | String representation of the Battery state. May be one
 
 ---
 
-### Get_Detailed_Energy  
+### Get_Energy_Measurements  
 
-Get detailed energy produced over date range in specified intervals.  
+Get Energy Measurements retrieves the sites energy measurements.  
 
 Type: Action   
-$is: getDetailedEnergy   
+$is: getEnergyMeasurements   
 Parent: [SiteNode](#sitenode)  
 
 Description:  
-Get Detailed Energy returns the energy usage over the specified date range at given intervals. This will provide production and consumption values at each time range over the specified period. *Limited to 1 year time range with a time unit interval of 1 day. Limited to 1 month time range when using a time unit interval of Quarter_Of_An_Hour or Hour* Lower resolutions (week, month and year) have no time range limitation.  
+Get Energy Measurements will return measurements for a given time range over a specified time period. Action returns a list of measurements at the date time with the value and measurement unit. It will verify the time range is valid and the time period is permitted with the specified time range. *When using time period of 1 day, the time range is limited to one year.* *When using a time period of Quarter_Of_An_Hour or Hour, time range is limited to one 1 month.*  
 
 Params:  
 
 Name | Type | Description
 --- | --- | ---
-dateRange | `string` | Date range for the period of time to retrieve the energy usage. Should be in the format MM-DD-YYYY HH:mm:SS/MM-DD-YYYY HH:mm:SS
-timeUnit | `enum[Quarter_Of_An_Hour,Hour,Day,Week,Month,Year]` | Time Unit is the interval over which the energy usage should be displayed.
+dateRange | `string` | Date range for the period of time to retrieve the energy measurements. Should be in the format MM-DD-YYYY HH:mm:SS/MM-DD-YYYY HH:mm:SS
+timeUnit | `enum[Quarter_Of_An_Hour,Hour,Day,Week,Month,Year]` | Time unit is interval period from which measurements over the dateRange should be provided.
 
 Return type: table   
 Columns:  
 
 Name | Type | Description
 --- | --- | ---
-date | `string` | Date time of the measurement value. 
-type | `string` | Type of energy usage (eg. consumption, production) 
-value | `number` | Value of the energy usage. 
-energyUnit | `string` | Unit of measurement for the energy usage. 
+date | `string` | Date Time of the measurement. 
+value | `number` | Value of the measurement. 
+energyUnity | `string` | Unit of the measurement value. 
+
+---
+
+### Get_Power_Measurements  
+
+Get power measurements in 15 minute resolution.  
+
+Type: Action   
+$is: getSitePower   
+Parent: [SiteNode](#sitenode)  
+
+Description:  
+Get Power Measurements returns the site's power measurements for the specified date range in 15 minute intervals. This action is limited to a date range of 1 month. It will verify the specified date range and return an empty list on failure.  
+
+Params:  
+
+Name | Type | Description
+--- | --- | ---
+dateRange | `string` | Date range for the period of time to retrieve the power measurements. Should be in the format MM-DD-YYYY HH:mm:SS/MM-DD-YYYY HH:mm:SS
+
+Return type: table   
+Columns:  
+
+Name | Type | Description
+--- | --- | ---
+date | `string` | Date time of the power measurement. 
+value | `number` | Value of the power measurement. 
+energyUnit | `Energy` | Unit of the power measurement value. 
+
+---
+
+### Get_Detailed_Power  
+
+Get Detailed power measurements from meters.  
+
+Type: Action   
+$is: getDetailedPower   
+Parent: [SiteNode](#sitenode)  
+
+Description:  
+Get Detailed Power retrieves measurements for consumption, production and other power sources over the specified date range. The action is limited to a 1 month period of measurements. It will verify the date range provided. If the action fails it will return an empty list.  
+
+Params:  
+
+Name | Type | Description
+--- | --- | ---
+dateRange | `string` | Date range for the period of time to retrieve the power measurements. Should be in the format MM-DD-YYYY HH:mm:SS/MM-DD-YYYY HH:mm:SS
+
+Return type: table   
+Columns:  
+
+Name | Type | Description
+--- | --- | ---
+date | `string` | Date time of the power measurement. 
+type | `string` | Type of power measurement. (Eg. consumption, production) 
+value | `number` | Value of the power measurement. 
+energyUnit | `Energy` | Unity of the power measurement value. 
 
 ---
 
@@ -1307,6 +1316,107 @@ Last Day revenue generated.
 Type: Node   
 $is: overviewValue   
 Parent: [lastDayData](#lastdaydata)  
+Value Type: `number`  
+Writable: `never`  
+
+---
+
+### environmentalBenefitsNode  
+
+Collection of values related to the environmental benefits of this site.  
+
+Type: Node   
+Parent: [SiteNode](#sitenode)  
+
+---
+
+### Refresh_Benefits  
+
+Refresh Environmental Benefits data.  
+
+Type: Action   
+$is: refreshBenefitsNode   
+Parent: [environmentalBenefitsNode](#environmentalbenefitsnode)  
+Return type: values   
+Columns:  
+
+Name | Type | Description
+--- | --- | ---
+success | `bool` | Success returns true on success; false on failure. 
+message | `string` | Message returns Success! on success. 
+
+---
+
+### treesPlanted  
+
+The equivalent planting of new trees for reducing CO2 levels  
+
+Type: Node   
+Parent: [environmentalBenefitsNode](#environmentalbenefitsnode)  
+Value Type: `number`  
+Writable: `never`  
+
+---
+
+### lightBulbs  
+
+The number of light bulbs that could have been powered by the site for a day  
+
+Type: Node   
+Parent: [environmentalBenefitsNode](#environmentalbenefitsnode)  
+Value Type: `number`  
+Writable: `never`  
+
+---
+
+### gasEmissionSavedNode  
+
+Collection of values related to gas emissions saved by this site.  
+
+Type: Node   
+Parent: [environmentalBenefitsNode](#environmentalbenefitsnode)  
+
+---
+
+### units  
+
+Unit of measurements (Lbs or Kgs)  
+
+Type: Node   
+Parent: [gasEmissionSavedNode](#gasemissionsavednode)  
+Value Type: `string`  
+Writable: `never`  
+
+---
+
+### co2  
+
+Value of CO2 emissions saved  
+
+Type: Node   
+Parent: [gasEmissionSavedNode](#gasemissionsavednode)  
+Value Type: `number`  
+Writable: `never`  
+
+---
+
+### so2  
+
+Value of SO2 emissions saved  
+
+Type: Node   
+Parent: [gasEmissionSavedNode](#gasemissionsavednode)  
+Value Type: `number`  
+Writable: `never`  
+
+---
+
+### nox  
+
+Value of NOX emissions saved  
+
+Type: Node   
+Parent: [gasEmissionSavedNode](#gasemissionsavednode)  
 Value Type: `number`  
 Writable: `never`  
 
