@@ -25,6 +25,7 @@ class EnvironmentalBenefitsNode extends SeBase {
     //* @Parent environmentalBenefitsNode
     //*
     //* The equivalent planting of new trees for reducing CO2 levels
+    //* @Value number
     _trees: {
       r'$name': 'Trees Planted',
       r'$type': 'number',
@@ -35,6 +36,7 @@ class EnvironmentalBenefitsNode extends SeBase {
     //*
     //* The number of light bulbs that could have been powered by the site for
     //* a day
+    //* @Value number
     _lights: {
       r'$name': 'Light Bulbs',
       r'$description': 'Number of light bulbs powered for a day',
@@ -135,6 +137,7 @@ class GasEmissionSavedNode extends SeBase {
     //* @Parent gasEmissionSavedNode
     //*
     //* Unit of measurements (Lbs or Kgs)
+    //* @Value string
     _unit: {
       r'$name': 'Units',
       r'$type': 'string',
@@ -144,6 +147,7 @@ class GasEmissionSavedNode extends SeBase {
     //* @Parent gasEmissionSavedNode
     //*
     //* Value of CO2 emissions saved
+    //* @Value number
     _co2: {
       r'$name': 'CO2',
       r'$type': 'number',
@@ -153,6 +157,7 @@ class GasEmissionSavedNode extends SeBase {
     //* @Parent gasEmissionSavedNode
     //*
     //* Value of SO2 emissions saved
+    //* @Value number
     _so2: {
       r'$name': 'SO2',
       r'$type': 'number',
@@ -162,6 +167,7 @@ class GasEmissionSavedNode extends SeBase {
     //* @Parent gasEmissionSavedNode
     //*
     //* Value of NOX emissions saved
+    //* @Value number
     _nox: {
       r'$name': 'NOX',
       r'$type': 'number',
