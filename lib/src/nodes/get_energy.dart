@@ -369,11 +369,11 @@ class GetDetailedPower extends SeCommand {
     var diff = endDate.difference(startDate);
     if (diff.compareTo(_monthPeriod) > 0) return ret;
 
-    var qParams = {};
-    var startStr = startDate.toString();
-    var endStr = endDate.toString();
-    qParams['startTime'] = startStr.substring(0, startStr.length - 4);
-    qParams['endTime'] = endStr.substring(0, endStr.length - 4);
+    var qParams = {
+      'startTime': _trimDot(startDate.toString()),
+      'endTime': _trimDot(endDate.toString())
+    };
+
     var site = await getSite();
     var result = await client.getDetailedPower(site, qParams);
     updateCalls();
@@ -391,6 +391,15 @@ class GetDetailedPower extends SeCommand {
     }
 
     return ret;
+  }
+
+  String _trimDot(String str) {
+    var dotInd = str.indexOf('.');
+    if (dotInd != -1) {
+      return str.substring(0, dotInd);
+    }
+
+    return str;
   }
 }
 
